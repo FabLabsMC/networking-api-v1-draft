@@ -16,6 +16,10 @@ if (isNullOrEmpty(System.getenv("TRAVIS_TAG")) && !isNullOrEmpty(System.getenv('
 logger.lifecycle("${project.repoName} version ${project.version}")
 group = project.mavenGroup
 
+repositories {
+    mavenCentral()
+}
+
 minecraft {
 }
 
@@ -25,24 +29,9 @@ dependencies {
     mappings "net.fabricmc:yarn:${project.yarnMappings}:v2"
     modCompile "net.fabricmc:fabric-loader:${project.loaderVersion}"
     
-    modCompile "net.fabricmc.fabric-api:fabric-api:${project.apiVersion}"
+    //modCompile "net.fabricmc.fabric-api:fabric-api:${project.apiVersion}"
 
-    annotationProcessor 'net.fabricmc:fabric-mixin-compile-extensions:0.2.0.+'
-}
-
-sourceSets {
-    code {
-        compileClasspath += sourceSets.main.compileClasspath
-        compileClasspath += configurations.minecraftNamed
-        runtimeClasspath += sourceSets.main.runtimeClasspath
-        compileClasspath += configurations.minecraftNamed
-    }
-    data {
-        compileClasspath += sourceSets.code.compileClasspath
-        compileClasspath += sourceSets.code.output
-        runtimeClasspath += sourceSets.code.compileClasspath
-        runtimeClasspath += sourceSets.code.output
-    }
+    compileOnly 'org.jetbrains:annotations:18.0.0'
 }
 
 license {
@@ -57,17 +46,6 @@ license {
 // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
-    // Loom is just so cursed that it does not handle extra source sets nicely
-    options.annotationProcessorPath += configurations.annotationProcessor
-    doFirst {
-        def args = options.compilerArgs
-        project.minecraft {
-            args.add "-AinMapFileNamedIntermediary=" + mappingsProvider.tinyMappings.canonicalPath
-            args.add "-AoutMapFileNamedIntermediary=" + mappingsProvider.mappingsMixinExport.canonicalPath
-            args.add "-AoutRefMapFile=" + new File(destinationDir, refmapName).canonicalPath
-            args.add "-AdefaultObfuscationEnv=named:intermediary"
-        }
-    }
 }
 
 tasks.withType(Javadoc) {
@@ -80,8 +58,6 @@ tasks.withType(Javadoc) {
     }
 }
 
-def dataDir = file("$buildDir/datadump/")
-def dataCacheDir = file("$dataDir/.cache/")
 def outputDirectory = file("$buildDir/pom-properties")
 def pomProperties = file("$outputDirectory/pom.properties")
 
@@ -95,33 +71,7 @@ version=${project.version}
     outputs.file(pomProperties)
 }
 
-task generateData(type: JavaExec) {
-    doFirst {
-        dataDir.mkdirs()
-    }
-
-    classpath = sourceSets.data.runtimeClasspath
-
-    main = project.dataEntry
-
-    // arguments to pass to the application
-
-    workingDir dataDir
-    inputs.files sourceSets.data.output
-    outputs.dir dataDir
-    args dataDir.getAbsolutePath()
-
-    doLast {
-        dataCacheDir.delete()
-    }
-}
-
 processResources {
-    from(generateData.outputs.files) {
-        include "/data/"
-    }
-    from sourceSets.code.resources.srcDirs
-
     inputs.properties "version": project.version, "description": project.description
 
     from(sourceSets.main.resources.srcDirs) {
@@ -149,13 +99,13 @@ processResources {
 // If you remove this task, sources will not be generated.
 task sourcesJar(type: Jar, dependsOn: classes) {
     archiveClassifier.set "sources"
-    from sourceSets.code.allSource
+    from sourceSets.main.allSource
     from "LICENSE"
 }
 
 task javadocs(type: Javadoc) {
-    source = sourceSets.code.allJava
-    classpath = sourceSets.code.compileClasspath
+    source = sourceSets.main.allJava
+    classpath = sourceSets.main.compileClasspath
 
     options {
         if (file("readme.html").exists()) {
@@ -166,7 +116,8 @@ task javadocs(type: Javadoc) {
                 'http://asm.ow2.org/asm50/javadoc/user/',
                 'https://docs.oracle.com/javase/8/docs/api/',
                 'http://jenkins.liteloader.com/job/Mixin/javadoc/',
-                'https://logging.apache.org/log4j/2.x/log4j-api/apidocs/'
+                'https://logging.apache.org/log4j/2.x/log4j-api/apidocs/',
+                'https://modmuss50.me/fabric-api-0.4.30+local-1.16-fatjavadoc/'
                 // Need to add minecraft jd publication once there is one available
         )
     }
@@ -178,8 +129,6 @@ task javadocsJar(type: Jar, dependsOn: javadocs) {
 }
 
 jar {
-    dependsOn generateData
-    from sourceSets.code.output
     from "LICENSE"
 }
 
@@ -298,4 +247,8 @@ tasks.withType(Jar) {
 
 static boolean isNullOrEmpty(String st) {
     return st == null || st.isEmpty()
+}
+
+runClient {
+    jvmArgs "-Dlog4j.configurationFile=../logConfig.xml"
 }

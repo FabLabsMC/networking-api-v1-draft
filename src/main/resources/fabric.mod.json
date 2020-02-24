@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "${id}",
+  "id": "networking-api-v1-draft",
   "version": "${version}",
-  "name": "double cart",
+  "name": "Networking API v1 Draft",
   "description": "${description}",
   "authors": [
     "liach"
@@ -12,16 +12,20 @@
     "sources": "https://github.com/${repoOwner}/${repoName}",
     "issues": "https://github.com/${repoOwner}/${repoName}/issues"
   },
-  "license": "MPL-2.0",
-  "icon": "assets/${id}/icon.png",
+  "license": "Unlicense",
+  "icon": "assets/networking-api-v1-draft/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.github.liachmodded.doublecart.DoubleCartEntry"
+      "com.github.liachmodded.networking.user.NetworkingUser"
+    ],
+    "client": [
+      "com.github.liachmodded.networking.user.NetworkingClientUser"
     ]
   },
   "mixins": [
-    "${id}.mixins.json"
+    "networking-api-v1-draft.mixins.json",
+    "networking-api-v1-draft-test.mixins.json"
   ],
   "depends": {
     "fabricloader": "${loaderVersionLimit}",
