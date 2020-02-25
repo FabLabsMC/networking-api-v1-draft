@@ -1,0 +1,11 @@
+com.github.liachmodded.networking.api
+com.github.liachmodded.networking.api.client
+com.github.liachmodded.networking.api.server
+com.github.liachmodded.networking.api.util
+com.github.liachmodded.networking.impl
+com.github.liachmodded.networking.impl.client
+com.github.liachmodded.networking.impl.server
+com.github.liachmodded.networking.mixin
+com.github.liachmodded.networking.mixin.access
+com.github.liachmodded.networking.user
+com.github.liachmodded.networking.user.mixin
