@@ -26,38 +26,22 @@
  */
 package com.github.liachmodded.networking.api;
 
-import com.google.common.annotations.Beta;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Supplier;
-
 public interface PacketSender {
 
 	// todo ask ppl to use the listener version to release the buf after sending!!!
-	void sendPacket(Identifier channel, PacketByteBuf buf);
+	void sendRawPacket(Identifier channel, PacketByteBuf buf);
 
 	// the generic future listener can accept ChannelFutureListener
-	void sendPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback);
+	void sendRawPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback);
 
 	// todo subject to modification/removal
-	@Deprecated @Beta
-	default void sendPacket(Identifier channel, Supplier<PacketByteBuf> bufSupplier) {
-		PacketByteBuf buf = bufSupplier.get();
-		sendPacket(channel, buf, none -> buf.release());
-	}
+	void sendClosedPacket(Identifier channel, PacketByteBuf buf);
 
-	@Deprecated @Beta
-	default void sendPacket(Identifier channel, Supplier<PacketByteBuf> bufSupplier, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
-		PacketByteBuf buf = bufSupplier.get();
-		sendPacket(channel, buf, none -> {
-			if (callback != null) {
-				callback.operationComplete(null);
-			}
-			buf.release();
-		});
-	}
+	void sendClosedPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback);
 }

@@ -24,31 +24,12 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
-package com.github.liachmodded.networking.api.client;
+package com.github.liachmodded.networking.impl;
 
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-import net.minecraft.client.network.ClientLoginNetworkHandler;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.util.Identifier;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.Collection;
 
-public interface LoginS2CContext extends S2CContext {
-	@Override
-	ClientLoginNetworkHandler getListener();
-
-	// packet qualities
-
-	int getQueryId();
-
-	// utilities
-	// if none of these "respond" is called, an unknown packet will be sent
-
-	// todo closed vs raw
-	void respond(PacketByteBuf buf);
-	
-	void respond(PacketByteBuf buf, GenericFutureListener<? extends Future<? super Void>> callback);
-
-	void respond(CompletableFuture<? extends PacketByteBuf> future);
-	void respond(CompletableFuture<? extends PacketByteBuf> future, GenericFutureListener<? extends Future<? super Void>> callback);
+public interface ChannelInfoHolder {
+	Collection<Identifier> getChannels();
 }

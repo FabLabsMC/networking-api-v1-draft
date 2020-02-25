@@ -26,11 +26,15 @@
  */
 package com.github.liachmodded.networking.mixin;
 
+import com.github.liachmodded.networking.impl.DisconnectPacketSource;
 import com.github.liachmodded.networking.impl.server.ServerLoginNetworkAddon;
 import com.github.liachmodded.networking.impl.server.ServerLoginNetworkHandlerHook;
+import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
+import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -42,7 +46,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerLoginNetworkHandler.class)
-public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetworkHandlerHook {
+public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetworkHandlerHook, DisconnectPacketSource {
 
 	@Shadow @Final @Mutable private String field_14165;
 
@@ -84,8 +88,8 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
 		return this.addon;
 	}
 
-	@Override
-	public void setServerId(String id) {
-		this.field_14165 = id;
+	@Override 
+	public Packet<?> makeDisconnectPacket(Text message) {
+		return new LoginDisconnectS2CPacket(message);
 	}
 }

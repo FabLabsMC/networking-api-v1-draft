@@ -28,7 +28,5 @@ package com.github.liachmodded.networking.impl.server;
 
 public interface ServerLoginNetworkHandlerHook {
 	
-	void setServerId(String id);
-	
 	ServerLoginNetworkAddon getAddon();
 }

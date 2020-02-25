@@ -40,6 +40,8 @@ public interface LoginC2SContext extends C2SContext {
 
 	// packet info
 	int getQueryId();
+	
+	boolean isUnderstood();
 
 	// utility
 	void waitFor(Future<?> future);

@@ -28,7 +28,9 @@ package com.github.liachmodded.networking.api.server;
 
 import com.github.liachmodded.networking.api.*;
 import com.github.liachmodded.networking.api.util.Event;
+import com.github.liachmodded.networking.impl.server.ServerLoginNetworkHandlerHook;
 import com.github.liachmodded.networking.impl.server.ServerNetworkingDetails;
+import com.github.liachmodded.networking.impl.server.ServerPlayNetworkHandlerHook;
 import com.github.liachmodded.networking.mixin.access.ServerLoginNetworkHandlerAccess;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
@@ -61,6 +63,12 @@ public final class ServerNetworking {
 					callback.handle(handler);
 				}
 			});
+	public static final Event<PacketListenerCallback<ServerLoginNetworkHandler>> LOGIN_INITIALIZED = Event
+			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
+				for (PacketListenerCallback<ServerLoginNetworkHandler> callback : callbacks) {
+					callback.handle(handler);
+				}
+			});
 	public static final Event<PacketListenerCallback<ServerLoginNetworkHandler>> LOGIN_START = Event
 			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
 				for (PacketListenerCallback<ServerLoginNetworkHandler> callback : callbacks) {
@@ -83,11 +91,11 @@ public final class ServerNetworking {
 	}
 
 	public static PlayPacketSender getPlaySender(ServerPlayNetworkHandler handler) {
-		throw new UnsupportedOperationException("TODO"); // TODO
+		return ((ServerPlayNetworkHandlerHook) handler).getAddon();
 	}
 
 	public static PacketSender getLoginSender(ServerLoginNetworkHandler handler) {
-		throw new UnsupportedOperationException("TODO"); // TODO
+		return ((ServerLoginNetworkHandlerHook) handler).getAddon();
 	}
 
 	public static PlayPacketSender getPlaySender(ServerPlayerEntity player) {

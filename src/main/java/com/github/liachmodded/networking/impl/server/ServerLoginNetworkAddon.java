@@ -29,6 +29,7 @@ package com.github.liachmodded.networking.impl.server;
 import com.github.liachmodded.networking.api.PacketSender;
 import com.github.liachmodded.networking.api.server.LoginC2SContext;
 import com.github.liachmodded.networking.api.server.ServerNetworking;
+import com.github.liachmodded.networking.api.util.PacketByteBufs;
 import com.github.liachmodded.networking.impl.AbstractNetworkAddon;
 import com.github.liachmodded.networking.impl.CartNetworkingDetails;
 import com.github.liachmodded.networking.mixin.access.LoginQueryRequestS2CPacketAccess;
@@ -70,6 +71,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<LoginC2S
 		if (this.firstQueryTick) {
 			this.sendCompressionPacket();
 			ServerNetworking.LOGIN_START.invoker().handle(this.handler);
+			this.firstQueryTick = false;
 		}
 
 		this.waits.removeIf(Future::isDone);
@@ -96,7 +98,8 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<LoginC2S
 			return false;
 		}
 
-		return this.handle(channel, originalBuf, new Context(queryId));
+		boolean understood = originalBuf != null;
+		return this.handle(channel, understood ? originalBuf : PacketByteBufs.empty(), new Context(queryId, understood));
 	}
 
 	@Override
@@ -113,9 +116,11 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<LoginC2S
 
 	final class Context implements LoginC2SContext {
 		private final int queryId;
+		private final boolean understood;
 
-		Context(int queryId) {
+		Context(int queryId, boolean understood) {
 			this.queryId = queryId;
+			this.understood = understood;
 		}
 
 		@Override
@@ -131,6 +136,11 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<LoginC2S
 		@Override
 		public int getQueryId() {
 			return this.queryId;
+		}
+
+		@Override
+		public boolean isUnderstood() {
+			return this.understood;
 		}
 
 		@Override

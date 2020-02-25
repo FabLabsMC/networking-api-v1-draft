@@ -26,11 +26,20 @@
  */
 package com.github.liachmodded.networking.impl;
 
+import com.github.liachmodded.networking.api.client.ClientNetworking;
+import com.github.liachmodded.networking.api.server.ServerNetworking;
+import com.github.liachmodded.networking.api.util.PacketByteBufs;
+import com.github.liachmodded.networking.impl.client.ClientNetworkingDetails;
 import com.github.liachmodded.networking.impl.server.QueryIdFactory;
+import com.github.liachmodded.networking.impl.server.ServerNetworkingDetails;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.PacketByteBuf;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,6 +48,7 @@ public final class CartNetworkingDetails {
 	public static final Logger LOGGER = LogManager.getLogger("Networking API v1 Draft");
 	public static final Identifier REGISTER_CHANNEL = new Identifier("minecraft", "register");
 	public static final Identifier UNREGISTER_CHANNEL = new Identifier("minecraft", "unregister");
+	public static final Identifier EARLY_REGISTRATION_CHANNEL = new Identifier("networking-api-v1-draft", "early_registration");
 	public static final boolean WARN_UNREGISTERED_PACKETS = Boolean.parseBoolean(System.getProperty("liachmodded.networkingapi.warnUnregisteredPackets", "true"));
 	
 	public static QueryIdFactory createQueryIdManager() {
@@ -51,5 +61,56 @@ public final class CartNetworkingDetails {
 				return currentId.getAndIncrement();
 			}
 		};
+	}
+	
+	public static void initialize() {
+		ServerNetworking.LOGIN_START.register(handler -> {
+			PacketByteBuf buf = PacketByteBufs.create();
+			Collection<Identifier> channels = ServerNetworkingDetails.PLAY.getChannels();
+			buf.writeVarInt(channels.size());
+			for (Identifier id : channels) {
+				buf.writeString(id.toString(), 65535);
+			}
+			ServerNetworking.getLoginSender(handler).sendClosedPacket(EARLY_REGISTRATION_CHANNEL, buf);
+		});
+		ServerNetworking.getLoginReceiver().register(EARLY_REGISTRATION_CHANNEL, (context, buf) -> {
+			if (!context.isUnderstood())
+				return;
+			
+			int n = buf.readVarInt();
+			List<Identifier> ids = new ArrayList<>(n);
+			for (int i = 0; i < n; i++) {
+				Identifier id = Identifier.tryParse(buf.readString(65535));
+				if (id != null) {
+					ids.add(id);
+				}
+			}
+			
+			((ChannelInfoHolder) context.getListener().getConnection()).getChannels().addAll(ids);
+		});
+	}
+	
+	public static void clientInitialize() {
+		ClientNetworking.getLoginReceiver().register(EARLY_REGISTRATION_CHANNEL, (context, buf) -> {
+			int n = buf.readVarInt();
+			List<Identifier> ids = new ArrayList<>(n);
+			for (int i = 0; i < n; i++) {
+				Identifier id = Identifier.tryParse(buf.readString(65535));
+				if (id != null) {
+					ids.add(id);
+				}
+			}
+
+			((ChannelInfoHolder) context.getListener().getConnection()).getChannels().addAll(ids);
+
+			PacketByteBuf response = PacketByteBufs.create();
+			Collection<Identifier> channels = ClientNetworkingDetails.PLAY.getChannels();
+			response.writeVarInt(channels.size());
+			for (Identifier id : channels) {
+				response.writeString(id.toString(), 65535);
+			}
+			
+			context.respond(response);
+		});
 	}
 }

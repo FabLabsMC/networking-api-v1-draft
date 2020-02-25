@@ -17,9 +17,11 @@
   "environment": "*",
   "entrypoints": {
     "main": [
+      "com.github.liachmodded.networking.impl.CartNetworkingDetails::initialize",
       "com.github.liachmodded.networking.user.NetworkingUser"
     ],
     "client": [
+      "com.github.liachmodded.networking.impl.CartNetworkingDetails::clientInitialize",
       "com.github.liachmodded.networking.user.NetworkingClientUser"
     ]
   },

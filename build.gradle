@@ -250,5 +250,9 @@ static boolean isNullOrEmpty(String st) {
 }
 
 runClient {
-    jvmArgs "-Dlog4j.configurationFile=../logConfig.xml"
+    jvmArgs "-Dlog4j.configurationFile=../logConfig.xml", "-Dmixin.debug=true"
+}
+
+runServer {
+    jvmArgs "-Dlog4j.configurationFile=../logConfig.xml", "-Dmixin.debug=true"
 }

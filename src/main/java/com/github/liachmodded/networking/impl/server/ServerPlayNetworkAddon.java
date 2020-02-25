@@ -60,6 +60,10 @@ public final class ServerPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 	
 	// impl details
 
+	@Override protected void schedule(Runnable task) {
+		this.handler.player.server.execute(task);
+	}
+
 	@Override
 	protected Packet<?> makeUncheckedPacket(Identifier channel, PacketByteBuf buf) {
 		return new CustomPayloadS2CPacket(channel, buf);

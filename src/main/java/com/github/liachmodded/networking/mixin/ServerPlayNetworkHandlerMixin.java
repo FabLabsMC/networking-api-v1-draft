@@ -26,17 +26,21 @@
  */
 package com.github.liachmodded.networking.mixin;
 
+import com.github.liachmodded.networking.impl.DisconnectPacketSource;
 import com.github.liachmodded.networking.impl.server.ServerPlayNetworkAddon;
 import com.github.liachmodded.networking.impl.server.ServerPlayNetworkHandlerHook;
+import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayNetworkHandler.class)
-public abstract class ServerPlayNetworkHandlerMixin implements ServerPlayNetworkHandlerHook {
+public abstract class ServerPlayNetworkHandlerMixin implements ServerPlayNetworkHandlerHook, DisconnectPacketSource {
 
 	private ServerPlayNetworkAddon addon;
 
@@ -55,5 +59,10 @@ public abstract class ServerPlayNetworkHandlerMixin implements ServerPlayNetwork
 	@Override
 	public ServerPlayNetworkAddon getAddon() {
 		return this.addon;
+	}
+
+	@Override
+	public Packet<?> makeDisconnectPacket(Text message) {
+		return new DisconnectS2CPacket(message);
 	}
 }

@@ -31,6 +31,8 @@ import com.github.liachmodded.networking.api.util.PacketByteBufs;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -53,7 +55,7 @@ public final class NetworkingUser implements ModInitializer {
 	public static void sendToTestChannel(ServerPlayerEntity player, String stuff) {
 		PacketByteBuf buf = PacketByteBufs.create();
 		buf.writeString(stuff, 32767);
-		ServerNetworking.getPlaySender(player).sendPacket(TEST_CHANNEL, buf, f -> buf.release());
+		ServerNetworking.getPlaySender(player).sendClosedPacket(TEST_CHANNEL, buf);
 	}
 
 	public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -72,6 +74,11 @@ public final class NetworkingUser implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ByteBuf buf = Unpooled.buffer().readBytes(0);
+		
+		LOGGER.info("Empty buf from readBytes refCnt: {}", buf.refCnt());
+		buf.release(); // todo will this crash lol
+		LOGGER.info("Empty buf from readBytes refCnt {} after release", buf.refCnt());
 		LOGGER.info("Hello from networking user!");
 	}
 }

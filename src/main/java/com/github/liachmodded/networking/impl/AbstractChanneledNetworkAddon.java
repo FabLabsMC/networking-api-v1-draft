@@ -29,7 +29,6 @@ package com.github.liachmodded.networking.impl;
 import com.github.liachmodded.networking.api.PlayContext;
 import com.github.liachmodded.networking.api.PlayPacketSender;
 import com.github.liachmodded.networking.api.util.PacketByteBufs;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.util.AsciiString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
@@ -54,6 +53,11 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 		super(receiver, connection);
 		this.sendableChannels = sendableChannels;
 		this.sendableChannelsView = Collections.unmodifiableSet(sendableChannels);
+		
+		Collection<Identifier> pending = ((ChannelInfoHolder) connection).getChannels();
+		if (!pending.isEmpty()) {
+			register(new ArrayList<>(pending));
+		}
 	}
 
 	@Override
@@ -68,10 +72,15 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 	}
 
 	public void sendRegistration() {
+		Collection<Identifier> channels = this.receiver.getChannels();
+		if (channels.isEmpty()) {
+			return;
+		}
+
 		PacketByteBuf buf = PacketByteBufs.create();
 
 		boolean first = true;
-		for (Identifier channel : this.receiver.getChannels()) {
+		for (Identifier channel : channels) {
 			if (first) {
 				first = false;
 			} else {
@@ -80,7 +89,7 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 			buf.writeBytes(channel.toString().getBytes(StandardCharsets.US_ASCII));
 		}
 
-		sendPacket(CartNetworkingDetails.REGISTER_CHANNEL, buf, (ChannelFutureListener) future -> buf.release());
+		sendClosedPacket(CartNetworkingDetails.REGISTER_CHANNEL, buf);
 	}
 
 	// wrap in try with res (buf)
@@ -97,13 +106,9 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 				active = new StringBuilder();
 			}
 		}
-		addId(ids, active);
 
-		if (register) {
-			register(ids);
-		} else {
-			unregister(ids);
-		}
+		addId(ids, active);
+		schedule(register ? () -> register(ids) : () -> unregister(ids));
 	}
 
 	public void register(List<Identifier> ids) {
@@ -115,6 +120,8 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 		this.sendableChannels.removeAll(ids);
 		postUnregisterEvent(ids);
 	}
+
+	protected abstract void schedule(Runnable task);
 
 	protected abstract Packet<?> makeUncheckedPacket(Identifier channel, PacketByteBuf buf);
 
@@ -143,7 +150,7 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 
 	@Override
 	protected Packet<?> makePacket(Identifier channel, PacketByteBuf buf) {
-		if (CartNetworkingDetails.WARN_UNREGISTERED_PACKETS && !hasChannel(channel)) {
+		if (CartNetworkingDetails.WARN_UNREGISTERED_PACKETS && !hasChannel(channel) && !channel.equals(CartNetworkingDetails.REGISTER_CHANNEL) && !channel.equals(CartNetworkingDetails.UNREGISTER_CHANNEL)) {
 			CartNetworkingDetails.LOGGER.warn("Packet sent to unregistered channel \"{}\" on {}!", channel, this.connection);
 		}
 		return makeUncheckedPacket(channel, buf);

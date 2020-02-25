@@ -26,10 +26,9 @@
  */
 package com.github.liachmodded.networking.impl;
 
-import com.github.liachmodded.networking.api.ChannelHandler;
 import com.github.liachmodded.networking.api.HandlerContext;
 import com.github.liachmodded.networking.api.PacketSender;
-import com.github.liachmodded.networking.api.util.PacketByteBufs;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.minecraft.network.ClientConnection;
@@ -51,12 +50,33 @@ public abstract class AbstractNetworkAddon<C extends HandlerContext> extends Rec
 	protected abstract Packet<?> makePacket(Identifier channel, PacketByteBuf buf);
 
 	@Override
-	public void sendPacket(Identifier channel, PacketByteBuf buf) {
+	public void sendRawPacket(Identifier channel, PacketByteBuf buf) {
 		this.connection.send(makePacket(channel, buf));
 	}
 
 	@Override
-	public void sendPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
+	public void sendRawPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
 		this.connection.send(makePacket(channel, buf), callback);
+	}
+
+	@Override
+	public void sendClosedPacket(Identifier channel, PacketByteBuf buf) {
+		if (this.connection.isLocal()) {
+			this.sendRawPacket(channel, buf); // Local packet objects are just handed over, so don't release!
+		} else {
+			this.sendRawPacket(channel, buf, f -> buf.release());
+		}
+	}
+
+	@Override
+	public void sendClosedPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
+		if (this.connection.isLocal()) {
+			this.sendRawPacket(channel, buf, callback); // Local packet objects are just handed over, so don't release!
+		} else {
+			this.sendRawPacket(channel, buf, callback == null ? f -> buf.release() : (ChannelFutureListener) f -> {
+				((ChannelFutureListener) callback).operationComplete(f);
+				buf.release();
+			});
+		}
 	}
 }

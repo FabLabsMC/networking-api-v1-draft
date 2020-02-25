@@ -48,6 +48,7 @@ public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 	public ClientPlayNetworkAddon(ClientPlayNetworkHandler handler) {
 		super(ClientNetworkingDetails.PLAY, handler.getConnection());
 		this.handler = handler;
+		ClientNetworking.PLAY_INITIALIZED.invoker().handle(this.handler);
 	}
 	
 	// also expose sendRegistration
@@ -62,7 +63,12 @@ public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 	}
 	
 	// impl details
-	
+
+	@Override
+	protected void schedule(Runnable task) {
+		MinecraftClient.getInstance().execute(task);
+	}
+
 	@Override
 	protected Packet<?> makeUncheckedPacket(Identifier channel, PacketByteBuf buf) {
 		return new CustomPayloadC2SPacket(channel, buf);
