@@ -57,6 +57,7 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 		Collection<Identifier> pending = ((ChannelInfoHolder) connection).getChannels();
 		if (!pending.isEmpty()) {
 			register(new ArrayList<>(pending));
+			pending.clear();
 		}
 	}
 

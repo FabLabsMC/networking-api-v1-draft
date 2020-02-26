@@ -28,6 +28,7 @@ package com.github.liachmodded.networking.user;
 
 import com.github.liachmodded.networking.api.server.ServerNetworking;
 import com.github.liachmodded.networking.api.util.PacketByteBufs;
+import com.github.liachmodded.networking.impl.CartNetworkingDetails;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -56,6 +57,7 @@ public final class NetworkingUser implements ModInitializer {
 		PacketByteBuf buf = PacketByteBufs.create();
 		buf.writeString(stuff, 32767);
 		ServerNetworking.getPlaySender(player).sendClosedPacket(TEST_CHANNEL, buf);
+		CartNetworkingDetails.LOGGER.info("Sent custom payload packet in {}", TEST_CHANNEL);
 	}
 
 	public static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -74,11 +76,6 @@ public final class NetworkingUser implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		ByteBuf buf = Unpooled.buffer().readBytes(0);
-		
-		LOGGER.info("Empty buf from readBytes refCnt: {}", buf.refCnt());
-		buf.release(); // todo will this crash lol
-		LOGGER.info("Empty buf from readBytes refCnt {} after release", buf.refCnt());
 		LOGGER.info("Hello from networking user!");
 	}
 }

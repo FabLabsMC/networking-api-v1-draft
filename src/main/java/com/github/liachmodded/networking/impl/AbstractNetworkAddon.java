@@ -28,6 +28,7 @@ package com.github.liachmodded.networking.impl;
 
 import com.github.liachmodded.networking.api.HandlerContext;
 import com.github.liachmodded.networking.api.PacketSender;
+import com.github.liachmodded.networking.api.util.FutureListeners;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -73,10 +74,7 @@ public abstract class AbstractNetworkAddon<C extends HandlerContext> extends Rec
 		if (this.connection.isLocal()) {
 			this.sendRawPacket(channel, buf, callback); // Local packet objects are just handed over, so don't release!
 		} else {
-			this.sendRawPacket(channel, buf, callback == null ? f -> buf.release() : (ChannelFutureListener) f -> {
-				((ChannelFutureListener) callback).operationComplete(f);
-				buf.release();
-			});
+			this.sendRawPacket(channel, buf, FutureListeners.union(f -> buf.release(), callback));
 		}
 	}
 }
