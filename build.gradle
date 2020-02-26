@@ -135,7 +135,7 @@ jar {
 afterEvaluate {
     artifacts {
         archives remapJar
-        // archives remapSourcesJar wait for loom pr
+        archives remapSourcesJar // wait for loom pr
         archives javadocsJar
     }
 }
