@@ -52,8 +52,7 @@ public abstract class ReceivingNetworkAddon<C extends HandlerContext> {
 			handler.receive(context, buf);
 		} catch (Throwable ex) {
 			CartNetworkingDetails.LOGGER.error("Encountered exception while handling in channel \"{}\"", channel, ex);
-			if (handler.rethrows(ex))
-				throw ex;
+			handler.rethrow(ex);
 		}
 		
 		return true;

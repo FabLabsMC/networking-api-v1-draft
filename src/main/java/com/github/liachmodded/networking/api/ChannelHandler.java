@@ -26,6 +26,7 @@
  */
 package com.github.liachmodded.networking.api;
 
+import net.minecraft.network.OffThreadException;
 import net.minecraft.util.PacketByteBuf;
 
 public interface ChannelHandler<C extends HandlerContext> {
@@ -33,7 +34,9 @@ public interface ChannelHandler<C extends HandlerContext> {
 	void receive(C context, PacketByteBuf buf);
 	
 	// throw networking errors, may report custom message as well
-	default boolean rethrows(Throwable ex) {
-		return ex instanceof Error;
+	// may throw OffThreadException.INSTANCE for example
+	@SuppressWarnings("unchecked")
+	default <E extends Throwable> void rethrow(Throwable ex) throws E {
+		throw (E) ex;
 	}
 }

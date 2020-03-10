@@ -195,6 +195,9 @@ publishing {
             // add all the jars that should be included when publishing to maven
             afterEvaluate {
                 artifact remapJar
+                artifact(sourcesJar) {
+                    builtBy remapSourcesJar
+                }
                 // artifact remapSourcesJar wait for loom pr
                 artifact javadocsJar
             }

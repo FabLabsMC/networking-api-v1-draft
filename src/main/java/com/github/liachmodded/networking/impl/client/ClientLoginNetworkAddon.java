@@ -73,7 +73,7 @@ public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<LoginS2
 
 		@Override
 		public void close() {
-			if (!responded) {
+			if (!responded && handler.getConnection().isOpen()) {
 				respond((PacketByteBuf) null);
 			}
 		}
