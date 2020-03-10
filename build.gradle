@@ -108,6 +108,7 @@ task javadocs(type: Javadoc) {
     classpath = sourceSets.main.compileClasspath
 
     options {
+        source = "8"
         if (file("readme.html").exists()) {
             overview = "readme.html"
         }
