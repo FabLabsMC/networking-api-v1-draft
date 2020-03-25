@@ -5,10 +5,10 @@
   "name": "Networking API v1 Draft",
   "description": "${description}",
   "authors": [
-    "liach"
+    "FablabsMC"
   ],
   "contact": {
-    "homepage": "https://${repoOwner}.github.io/${repoName}/overview-summary.html",
+    "homepage": "https://github.com/${repoOwner}/${repoName}",
     "sources": "https://github.com/${repoOwner}/${repoName}",
     "issues": "https://github.com/${repoOwner}/${repoName}/issues"
   },
@@ -17,12 +17,12 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.github.liachmodded.networking.impl.CartNetworkingDetails::initialize",
-      "com.github.liachmodded.networking.user.NetworkingUser"
+      "io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails::initialize",
+      "io.github.fablabsmc.fablabs.test.networking.NetworkingUser"
     ],
     "client": [
-      "com.github.liachmodded.networking.impl.CartNetworkingDetails::clientInitialize",
-      "com.github.liachmodded.networking.user.NetworkingClientUser"
+      "io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails::clientInitialize",
+      "io.github.fablabsmc.fablabs.test.networking.NetworkingClientUser"
     ]
   },
   "mixins": [
