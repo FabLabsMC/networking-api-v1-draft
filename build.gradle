@@ -203,7 +203,7 @@ publishing {
                     builtBy remapSourcesJar
                 }
                 // artifact remapSourcesJar wait for loom pr
-                artifact javadocsJar
+                artifact javadocJar
             }
         }
     }
