@@ -38,7 +38,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler;
 import io.github.fablabsmc.fablabs.api.networking.v1.ListenerContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
-import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.util.Identifier;
 
@@ -55,7 +54,7 @@ public final class BasicPacketReceiver<C extends ListenerContext> implements Pac
 		this.handlers = map;
 	}
 
-	public @Nullable ChannelHandler<? super C> get(Identifier channel) {
+	public ChannelHandler<? super C> get(Identifier channel) {
 		Lock lock = this.lock.readLock();
 		lock.lock();
 		try {
@@ -78,7 +77,7 @@ public final class BasicPacketReceiver<C extends ListenerContext> implements Pac
 	}
 
 	@Override
-	public @Nullable ChannelHandler<? super C> unregister(Identifier channel) {
+	public ChannelHandler<? super C> unregister(Identifier channel) {
 		Lock lock = this.lock.writeLock();
 		lock.lock();
 		try {

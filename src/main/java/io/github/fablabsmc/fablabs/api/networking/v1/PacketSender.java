@@ -28,14 +28,29 @@ package io.github.fablabsmc.fablabs.api.networking.v1;
 
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
+/**
+ * Supports sending packets to channels.
+ */
 public interface PacketSender {
+	/**
+	 * Sends a packet to a channel.
+	 *
+	 * @param channel the id of the channel
+	 * @param buf the content of the packet
+	 */
 	void sendPacket(Identifier channel, PacketByteBuf buf);
 
+	/**
+	 * Sends a packet to a channel.
+	 * 
+	 * @param channel the id of the channel
+	 * @param buf the content of the packet
+	 * @param callback an optional callback to execute after the packet is sent, may be {@code null}
+	 */
 	// the generic future listener can accept ChannelFutureListener
-	void sendPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback);
+	void sendPacket(Identifier channel, PacketByteBuf buf, /* Nullable */ GenericFutureListener<? extends Future<? super Void>> callback);
 }

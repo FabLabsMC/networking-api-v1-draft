@@ -30,7 +30,6 @@ import io.github.fablabsmc.fablabs.api.networking.v1.ListenerContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketSender;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
@@ -55,7 +54,7 @@ public abstract class AbstractNetworkAddon<C extends ListenerContext> extends Re
 	}
 
 	@Override
-	public void sendPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
+	public void sendPacket(Identifier channel, PacketByteBuf buf, GenericFutureListener<? extends Future<? super Void>> callback) {
 		this.connection.send(makePacket(channel, buf), callback);
 	}
 }

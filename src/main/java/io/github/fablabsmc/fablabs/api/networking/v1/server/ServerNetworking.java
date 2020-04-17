@@ -44,6 +44,16 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
+/**
+ * Offers access to server-side networking functionalities.
+ *
+ * <p>Server-side networking functionalities include receiving serverbound packets,
+ * sending clientbound packets, and events related to server-side network handlers.</p>
+ *
+ * <p>This class should be only used for the logical server.</p>
+ *
+ * @see io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking
+ */
 public final class ServerNetworking {
 
 	public static final Event<PacketChannelCallback<ServerPlayNetworkHandler>> CHANNEL_REGISTERED = EventFactory

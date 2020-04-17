@@ -28,8 +28,24 @@ package io.github.fablabsmc.fablabs.api.networking.v1;
 
 import net.minecraft.network.listener.PacketListener;
 
+/**
+ * A callback that involves a network handler.
+ *
+ * @param <L> the network handler
+ * @see io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking#PLAY_INITIALIZED
+ * @see io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking#PLAY_DISCONNECTED
+ * @see io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking#LOGIN_QUERY_START
+ * @see io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking#LOGIN_DISCONNECTED
+ * @see io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking#PLAY_INITIALIZED
+ * @see io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking#PLAY_DISCONNECTED
+ */
 @FunctionalInterface
 public interface PacketListenerCallback<L extends PacketListener> {
 
+	/**
+	 * Receive the network handler.
+	 *
+	 * @param handler the network handler
+	 */
 	void handle(L handler);
 }

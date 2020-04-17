@@ -39,6 +39,16 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
+/**
+ * Offers access to client-side networking functionalities.
+ * 
+ * <p>Client-side networking functionalities include receiving clientbound packets,
+ * sending serverbound packets, and events related to client-side network handlers.</p>
+ * 
+ * <p>This class should be only used on the physical client and for the logical client.</p>
+ * 
+ * @see io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking
+ */
 public final class ClientNetworking {
 
 	public static final Event<PacketListenerCallback<ClientPlayNetworkHandler>> PLAY_INITIALIZED = EventFactory

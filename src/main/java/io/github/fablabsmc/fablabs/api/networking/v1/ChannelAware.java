@@ -30,8 +30,24 @@ import java.util.Collection;
 
 import net.minecraft.util.Identifier;
 
+/**
+ * Represents an object that is keeps track of a collection of channels.
+ */
 public interface ChannelAware {
+	/**
+	 * Returns a collection of channels this object is tracking.
+	 *
+	 * <p>This collection does not contain duplicate channels.</p>
+	 *
+	 * @return a collection of channels
+	 */
 	Collection<Identifier> getChannels();
 
+	/**
+	 * Returns whether a channel is tracked by this object.
+	 *
+	 * @param channel the id of the channel to check
+	 * @return whether the channel is tracked
+	 */
 	boolean hasChannel(Identifier channel);
 }

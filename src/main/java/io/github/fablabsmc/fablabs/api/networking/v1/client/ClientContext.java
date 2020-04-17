@@ -27,11 +27,26 @@
 package io.github.fablabsmc.fablabs.api.networking.v1.client;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.ListenerContext;
+import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.server.MinecraftServer;
 
+/**
+ * Represents a context for {@linkplain PacketReceiver packet reception}
+ * on the logical client.
+ *
+ * <p>Compared to the basic listener context, the client context offers
+ * access to the active {@linkplain MinecraftClient <i>Minecraft</i> Client}.</p>
+ */
 public interface ClientContext extends ListenerContext {
-
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>In a client context, the game engine is always a <i>Minecraft</i> Client.</p>
+	 *
+	 * @return the <i>Minecraft</i> Client
+	 */
 	@Override
 	MinecraftClient getEngine();
 }

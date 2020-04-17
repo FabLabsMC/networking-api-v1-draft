@@ -28,9 +28,27 @@ package io.github.fablabsmc.fablabs.api.networking.v1;
 
 import net.minecraft.entity.player.PlayerEntity;
 
+/**
+ * Represents a context for {@linkplain PacketReceiver packet reception}
+ * in {@linkplain net.minecraft.network.NetworkState#PLAY play stage} of
+ * the game in a channel.
+ * 
+ * <p>Compared to the basic listener context, the play context offers
+ * more access to the game.</p>
+ */
 public interface PlayContext extends ListenerContext {
+	/**
+	 * Returns the packet sender corresponding this context.
+	 * 
+	 * <p>This packet sender may be useful for responding after receiving the packet.</p>
+	 *
+	 * @return the packet sender
+	 */
 	PlayPacketSender getPacketSender();
 
+	/**
+	 * Returns a player associated with the current packet.
+	 */
 	PlayerEntity getPlayer();
 
 }

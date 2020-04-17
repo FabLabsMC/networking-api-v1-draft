@@ -31,8 +31,23 @@ import java.util.List;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.util.Identifier;
 
+/**
+ * A callback that involves a network handler and a list of channels.
+ * 
+ * @param <L> the network handler
+ * @see io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking#CHANNEL_REGISTERED
+ * @see io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking#CHANNEL_UNREGISTERED
+ * @see io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking#CHANNEL_REGISTERED
+ * @see io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking#CHANNEL_UNREGISTERED
+ */
 @FunctionalInterface
 public interface PacketChannelCallback<L extends PacketListener> {
 
+	/**
+	 * Receive the network handler and the channels.
+	 *
+	 * @param handler the network handler
+	 * @param channels the channels
+	 */
 	void handle(L handler, List<Identifier> channels);
 }
