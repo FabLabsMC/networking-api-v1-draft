@@ -24,14 +24,16 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
 import net.minecraft.network.PacketByteBuf;
 
-public interface ChannelHandler<C extends HandlerContext> {
+public interface ChannelHandler<C extends ListenerContext> {
 
 	void receive(C context, PacketByteBuf buf);
 
+	// todo do we need this rethrow functionality
 	// throw networking errors, may report custom message as well
 	// may throw OffThreadException.INSTANCE for example
 	@SuppressWarnings("unchecked")

@@ -24,19 +24,26 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1.server;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.*;
+import io.github.fablabsmc.fablabs.api.networking.v1.PacketChannelCallback;
+import io.github.fablabsmc.fablabs.api.networking.v1.PacketListenerCallback;
+import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
+import io.github.fablabsmc.fablabs.api.networking.v1.PacketSender;
+import io.github.fablabsmc.fablabs.api.networking.v1.PlayPacketSender;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerLoginNetworkHandlerHook;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerNetworkingDetails;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerPlayNetworkHandlerHook;
 import io.github.fablabsmc.fablabs.mixin.networking.access.ServerLoginNetworkHandlerAccess;
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
+
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 
 public final class ServerNetworking {
 
@@ -64,13 +71,7 @@ public final class ServerNetworking {
 					callback.handle(handler);
 				}
 			});
-	public static final Event<PacketListenerCallback<ServerLoginNetworkHandler>> LOGIN_INITIALIZED = EventFactory
-			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
-				for (PacketListenerCallback<ServerLoginNetworkHandler> callback : callbacks) {
-					callback.handle(handler);
-				}
-			});
-	public static final Event<PacketListenerCallback<ServerLoginNetworkHandler>> LOGIN_START = EventFactory
+	public static final Event<PacketListenerCallback<ServerLoginNetworkHandler>> LOGIN_QUERY_START = EventFactory
 			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
 				for (PacketListenerCallback<ServerLoginNetworkHandler> callback : callbacks) {
 					callback.handle(handler);
@@ -83,11 +84,11 @@ public final class ServerNetworking {
 				}
 			});
 
-	public static PacketReceiver<PlayC2SContext> getPlayReceiver() {
+	public static PacketReceiver<ServerPlayContext> getPlayReceiver() {
 		return ServerNetworkingDetails.PLAY;
 	}
 
-	public static PacketReceiver<LoginC2SContext> getLoginReceiver() {
+	public static PacketReceiver<ServerLoginContext> getLoginReceiver() {
 		return ServerNetworkingDetails.LOGIN;
 	}
 

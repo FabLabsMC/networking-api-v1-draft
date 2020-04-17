@@ -24,13 +24,18 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
-package io.github.fablabsmc.fablabs.api.networking.v1;
 
-import net.minecraft.network.listener.PacketListener;
-import net.minecraft.util.thread.ThreadExecutor;
+package io.github.fablabsmc.fablabs.api.networking.v1.server;
 
-public interface HandlerContext {
-	PacketListener getListener();
+import io.github.fablabsmc.fablabs.api.networking.v1.PlayContext;
 
-	ThreadExecutor<?> getEngine();
+import net.minecraft.server.network.ServerPlayNetworkHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
+
+public interface ServerPlayContext extends ServerContext, PlayContext {
+	@Override
+	ServerPlayerEntity getPlayer();
+
+	@Override
+	ServerPlayNetworkHandler getListener();
 }

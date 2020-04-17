@@ -24,19 +24,17 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.mixin.networking;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.fablabsmc.fablabs.impl.networking.ChannelInfoHolder;
 import io.github.fablabsmc.fablabs.impl.networking.DisconnectPacketSource;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkSide;
-import net.minecraft.network.Packet;
-import net.minecraft.network.listener.PacketListener;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -44,28 +42,35 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.concurrent.ConcurrentHashMap;
+import net.minecraft.network.ClientConnection;
+import net.minecraft.network.NetworkSide;
+import net.minecraft.network.Packet;
+import net.minecraft.network.listener.PacketListener;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Identifier;
 
 @Mixin(ClientConnection.class)
 public abstract class ClientConnectionMixin implements ChannelInfoHolder {
 
-	@Shadow private PacketListener packetListener;
+	@Shadow
+	private PacketListener packetListener;
 
 	private Collection<Identifier> playChannels;
 
-	@Shadow public abstract void send(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> callback);
+	@Shadow
+	public abstract void send(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> callback);
 
-	@Shadow public abstract void disconnect(Text disconnectReason);
+	@Shadow
+	public abstract void disconnect(Text disconnectReason);
 
 	@Inject(method = "<init>", at = @At("RETURN"))
-	public void networking$ctor(NetworkSide side, CallbackInfo ci) {
+	private void networking$ctor(NetworkSide side, CallbackInfo ci) {
 		this.playChannels = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	}
 
 	@Redirect(method = "exceptionCaught", remap = false, at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;send(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V"))
-	public void networking$resendOnExceptionCaught(ClientConnection self, Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> listener) {
+	private void networking$resendOnExceptionCaught(ClientConnection self, Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> listener) {
 		PacketListener handler = this.packetListener;
 		if (handler instanceof DisconnectPacketSource) {
 			this.send(((DisconnectPacketSource) handler).makeDisconnectPacket(new TranslatableText("disconnect.genericReason")), listener);

@@ -24,24 +24,21 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-public interface PacketSender {
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
 
-	// todo ask ppl to use the listener version to release the buf after sending!!!
-	void sendRawPacket(Identifier channel, PacketByteBuf buf);
+public interface PacketSender {
+	// don't expose sendPacket(Packet<?>) as to avoid sending potentially bad packets and messing things up
+
+	void sendPacket(Identifier channel, PacketByteBuf buf);
 
 	// the generic future listener can accept ChannelFutureListener
-	void sendRawPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback);
-
-	// todo subject to modification/removal
-	void sendClosedPacket(Identifier channel, PacketByteBuf buf);
-
-	void sendClosedPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback);
+	void sendPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback);
 }

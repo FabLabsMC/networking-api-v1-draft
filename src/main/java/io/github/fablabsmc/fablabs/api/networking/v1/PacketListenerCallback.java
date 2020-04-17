@@ -24,10 +24,12 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
 import net.minecraft.network.listener.PacketListener;
 
+@FunctionalInterface
 public interface PacketListenerCallback<L extends PacketListener> {
 
 	void handle(L handler);

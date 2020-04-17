@@ -24,20 +24,23 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.mixin.networking;
 
+import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.DisconnectPacketSource;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerPlayNetworkAddon;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerPlayNetworkHandlerHook;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.Text;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin implements ServerPlayNetworkHandlerHook, DisconnectPacketSource {
@@ -45,15 +48,20 @@ public abstract class ServerPlayNetworkHandlerMixin implements ServerPlayNetwork
 	private ServerPlayNetworkAddon addon;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
-	public void networking$ctor(CallbackInfo ci) {
+	private void networking$ctor(CallbackInfo ci) {
 		this.addon = new ServerPlayNetworkAddon((ServerPlayNetworkHandler) (Object) this);
 	}
 
-	@Inject(method = "onCustomPayload", at = @At(value = "HEAD"), cancellable = true)
-	public void networking$customPayloadReceivedAsync(CustomPayloadC2SPacket packet, CallbackInfo ci) {
+	@Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)
+	private void networking$customPayloadReceivedAsync(CustomPayloadC2SPacket packet, CallbackInfo ci) {
 		if (this.addon.handle(packet)) {
 			ci.cancel();
 		}
+	}
+
+	@Inject(method = "onDisconnected", at = @At("HEAD"))
+	private void networking$onDisconnected(Text reason, CallbackInfo ci) {
+		ServerNetworking.PLAY_DISCONNECTED.invoker().handle((ServerPlayNetworkHandler) (Object) this);
 	}
 
 	@Override

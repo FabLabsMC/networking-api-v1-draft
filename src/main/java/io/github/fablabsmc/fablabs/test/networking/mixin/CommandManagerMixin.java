@@ -24,12 +24,11 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.test.networking.mixin;
 
 import com.mojang.brigadier.CommandDispatcher;
 import io.github.fablabsmc.fablabs.test.networking.NetworkingUser;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,10 +36,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+
 @Mixin(CommandManager.class)
 public abstract class CommandManagerMixin {
 
-	@Shadow @Final private CommandDispatcher<ServerCommandSource> dispatcher;
+	@Shadow
+	@Final
+	private CommandDispatcher<ServerCommandSource> dispatcher;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	public void networkingTest$ctor(boolean dedicated, CallbackInfo ci) {

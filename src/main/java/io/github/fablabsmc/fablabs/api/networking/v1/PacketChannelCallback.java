@@ -24,13 +24,15 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1;
+
+import java.util.List;
 
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.util.Identifier;
 
-import java.util.List;
-
+@FunctionalInterface
 public interface PacketChannelCallback<L extends PacketListener> {
 
 	void handle(L handler, List<Identifier> channels);

@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1.client;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketChannelCallback;
@@ -31,11 +32,13 @@ import io.github.fablabsmc.fablabs.api.networking.v1.PacketListenerCallback;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
 import io.github.fablabsmc.fablabs.api.networking.v1.PlayPacketSender;
 import io.github.fablabsmc.fablabs.impl.networking.client.ClientNetworkingDetails;
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 
 public final class ClientNetworking {
 
@@ -78,11 +81,11 @@ public final class ClientNetworking {
 		return ClientNetworkingDetails.getAddon(handler);
 	}
 
-	public static PacketReceiver<PlayS2CContext> getPlayReceiver() {
+	public static PacketReceiver<ClientPlayContext> getPlayReceiver() {
 		return ClientNetworkingDetails.PLAY;
 	}
 
-	public static PacketReceiver<LoginS2CContext> getLoginReceiver() {
+	public static PacketReceiver<ClientLoginContext> getLoginReceiver() {
 		return ClientNetworkingDetails.LOGIN;
 	}
 }

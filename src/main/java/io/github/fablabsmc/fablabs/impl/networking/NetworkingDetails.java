@@ -24,24 +24,25 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
-package io.github.fablabsmc.fablabs.impl.networking;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
-import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
-import io.github.fablabsmc.fablabs.api.networking.v1.util.FutureListeners;
-import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
-import io.github.fablabsmc.fablabs.impl.networking.client.ClientNetworkingDetails;
-import io.github.fablabsmc.fablabs.impl.networking.server.QueryIdFactory;
-import io.github.fablabsmc.fablabs.impl.networking.server.ServerNetworkingDetails;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+package io.github.fablabsmc.fablabs.impl.networking;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
+import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
+import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
+import io.github.fablabsmc.fablabs.impl.networking.client.ClientNetworkingDetails;
+import io.github.fablabsmc.fablabs.impl.networking.server.QueryIdFactory;
+import io.github.fablabsmc.fablabs.impl.networking.server.ServerNetworkingDetails;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
 
 public final class NetworkingDetails {
 
@@ -66,19 +67,20 @@ public final class NetworkingDetails {
 	}
 
 	public static void initialize() {
-		ServerNetworking.LOGIN_START.register(handler -> {
+		ServerNetworking.LOGIN_QUERY_START.register(handler -> {
 			PacketByteBuf buf = PacketByteBufs.create();
 			Collection<Identifier> channels = ServerNetworkingDetails.PLAY.getChannels();
 			buf.writeVarInt(channels.size());
 			for (Identifier id : channels) {
 				buf.writeIdentifier(id);
 			}
-			ServerNetworking.getLoginSender(handler).sendClosedPacket(EARLY_REGISTRATION_CHANNEL, buf);
+			ServerNetworking.getLoginSender(handler).sendPacket(EARLY_REGISTRATION_CHANNEL, buf);
 			NetworkingDetails.LOGGER.debug("Sent accepted channels to the client");
 		});
 		ServerNetworking.getLoginReceiver().register(EARLY_REGISTRATION_CHANNEL, (context, buf) -> {
-			if (!context.isUnderstood())
+			if (!context.isUnderstood()) {
 				return;
+			}
 
 			int n = buf.readVarInt();
 			List<Identifier> ids = new ArrayList<>(n);
@@ -109,7 +111,7 @@ public final class NetworkingDetails {
 				response.writeIdentifier(id);
 			}
 
-			context.respond(response, FutureListeners.free(response));
+			context.respond(response);
 			NetworkingDetails.LOGGER.debug("Sent accepted channels to the server");
 		});
 	}

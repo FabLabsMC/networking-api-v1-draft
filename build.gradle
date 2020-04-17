@@ -103,17 +103,20 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from "LICENSE"
 }
 
-task javadocs(type: Javadoc) {
+javadoc {
     source = sourceSets.main.allJava
     classpath = sourceSets.main.compileClasspath
 
     options {
         source = "8"
+        encoding = 'UTF-8'
+        charSet = 'UTF-8'
+        memberLevel = JavadocMemberLevel.PACKAGE
         if (file("readme.html").exists()) {
             overview = "readme.html"
         }
         links(
-                'https://google.github.io/guava/releases/21.0/api/docs/',
+                'https://guava.dev/releases/21.0/api/docs/',
                 'http://asm.ow2.org/asm50/javadoc/user/',
                 'https://docs.oracle.com/javase/8/docs/api/',
                 'http://jenkins.liteloader.com/job/Mixin/javadoc/',
@@ -124,9 +127,9 @@ task javadocs(type: Javadoc) {
     }
 }
 
-task javadocsJar(type: Jar, dependsOn: javadocs) {
-    archiveClassifier.set "javadocs"
-    from javadocs.destinationDir
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier.set "javadoc"
+    from javadoc.destinationDir
 }
 
 jar {

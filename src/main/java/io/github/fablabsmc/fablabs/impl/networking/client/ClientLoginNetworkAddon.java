@@ -24,13 +24,17 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking.client;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.client.LoginS2CContext;
+import java.util.concurrent.CompletableFuture;
+
+import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientLoginContext;
 import io.github.fablabsmc.fablabs.impl.networking.ReceivingNetworkAddon;
 import io.github.fablabsmc.fablabs.mixin.networking.access.LoginQueryRequestS2CPacketAccess;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.network.ClientConnection;
@@ -39,9 +43,7 @@ import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.util.Identifier;
 
-import java.util.concurrent.CompletableFuture;
-
-public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<LoginS2CContext> {
+public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<ClientLoginContext> {
 
 	private final ClientLoginNetworkHandler handler;
 
@@ -61,7 +63,7 @@ public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<LoginS2
 		}
 	}
 
-	final class Context implements LoginS2CContext, AutoCloseable {
+	final class Context implements ClientLoginContext, AutoCloseable {
 
 		private final int queryId;
 		private boolean responded;
@@ -110,6 +112,7 @@ public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<LoginS2
 			future.whenCompleteAsync((buf, ex) -> {
 				if (ex != null || buf == null) {
 					throw new RuntimeException(ex);
+					// todo how to handle?
 				}
 
 				connection.send(buildPacket(buf), callback);

@@ -24,16 +24,18 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler;
-import io.github.fablabsmc.fablabs.api.networking.v1.HandlerContext;
+import io.github.fablabsmc.fablabs.api.networking.v1.ListenerContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
+
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
 // client login
-public abstract class ReceivingNetworkAddon<C extends HandlerContext> {
+public abstract class ReceivingNetworkAddon<C extends ListenerContext> {
 	protected final BasicPacketReceiver<C> receiver;
 
 	protected ReceivingNetworkAddon(BasicPacketReceiver<C> receiver) {
@@ -44,8 +46,9 @@ public abstract class ReceivingNetworkAddon<C extends HandlerContext> {
 	protected boolean handle(Identifier channel, PacketByteBuf originalBuf, C context) {
 		ChannelHandler<? super C> handler = this.receiver.get(channel);
 
-		if (handler == null)
+		if (handler == null) {
 			return false;
+		}
 
 		PacketByteBuf buf = PacketByteBufs.slice(originalBuf);
 		try {

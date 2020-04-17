@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.test.networking;
 
 import com.mojang.brigadier.Command;
@@ -32,14 +33,16 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
 import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
 import io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails;
-import net.fabricmc.api.ModInitializer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import net.fabricmc.api.ModInitializer;
 
 public final class NetworkingUser implements ModInitializer {
 
@@ -54,7 +57,7 @@ public final class NetworkingUser implements ModInitializer {
 	public static void sendToTestChannel(ServerPlayerEntity player, String stuff) {
 		PacketByteBuf buf = PacketByteBufs.create();
 		buf.writeString(stuff, 32767);
-		ServerNetworking.getPlaySender(player).sendClosedPacket(TEST_CHANNEL, buf);
+		ServerNetworking.getPlaySender(player).sendPacket(TEST_CHANNEL, buf);
 		NetworkingDetails.LOGGER.info("Sent custom payload packet in {}", TEST_CHANNEL);
 	}
 

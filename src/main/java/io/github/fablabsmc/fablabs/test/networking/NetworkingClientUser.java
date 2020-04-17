@@ -24,12 +24,14 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.test.networking;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
-import net.fabricmc.api.ClientModInitializer;
-
 import static io.github.fablabsmc.fablabs.test.networking.NetworkingUser.TEST_CHANNEL;
+
+import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
+
+import net.fabricmc.api.ClientModInitializer;
 
 public final class NetworkingClientUser implements ClientModInitializer {
 

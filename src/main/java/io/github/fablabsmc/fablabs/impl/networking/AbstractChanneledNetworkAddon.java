@@ -24,20 +24,27 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking;
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.PlayContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.PlayPacketSender;
 import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
 import io.netty.util.AsciiString;
+
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-
-import java.nio.charset.StandardCharsets;
-import java.util.*;
 
 // play
 public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> extends AbstractNetworkAddon<C> implements PlayPacketSender {
@@ -90,7 +97,7 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 			buf.writeBytes(channel.toString().getBytes(StandardCharsets.US_ASCII));
 		}
 
-		sendClosedPacket(NetworkingDetails.REGISTER_CHANNEL, buf);
+		sendPacket(NetworkingDetails.REGISTER_CHANNEL, buf);
 	}
 
 	// wrap in try with res (buf)
@@ -150,7 +157,7 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 	}
 
 	@Override
-	protected Packet<?> makePacket(Identifier channel, PacketByteBuf buf) {
+	public Packet<?> makePacket(Identifier channel, PacketByteBuf buf) {
 		if (NetworkingDetails.WARN_UNREGISTERED_PACKETS && !hasChannel(channel) && !channel.equals(NetworkingDetails.REGISTER_CHANNEL) && !channel.equals(
 				NetworkingDetails.UNREGISTER_CHANNEL)) {
 			NetworkingDetails.LOGGER.warn("Packet sent to unregistered channel \"{}\" on {}!", channel, this.connection);

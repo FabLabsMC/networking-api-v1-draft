@@ -24,12 +24,33 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1.client;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.HandlerContext;
-import net.minecraft.client.MinecraftClient;
+import java.util.concurrent.CompletableFuture;
 
-public interface S2CContext extends HandlerContext {
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
-	@Override MinecraftClient getEngine();
+import net.minecraft.client.network.ClientLoginNetworkHandler;
+import net.minecraft.network.PacketByteBuf;
+
+public interface ClientLoginContext extends ClientContext {
+	@Override
+	ClientLoginNetworkHandler getListener();
+
+	// packet qualities
+
+	int getQueryId();
+
+	// utilities
+	// if none of these "respond" is called, an unknown packet will be sent
+
+	void respond(PacketByteBuf buf);
+
+	void respond(PacketByteBuf buf, GenericFutureListener<? extends Future<? super Void>> callback);
+
+	void respond(CompletableFuture<? extends PacketByteBuf> future);
+
+	void respond(CompletableFuture<? extends PacketByteBuf> future, GenericFutureListener<? extends Future<? super Void>> callback);
 }

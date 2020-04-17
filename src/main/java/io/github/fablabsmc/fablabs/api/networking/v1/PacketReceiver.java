@@ -24,12 +24,14 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
-public interface PacketReceiver<C extends HandlerContext> extends ChannelAware {
+import net.minecraft.util.Identifier;
+
+public interface PacketReceiver<C extends ListenerContext> extends ChannelAware {
 
 	boolean register(Identifier channel, ChannelHandler<? super C> handler);
 

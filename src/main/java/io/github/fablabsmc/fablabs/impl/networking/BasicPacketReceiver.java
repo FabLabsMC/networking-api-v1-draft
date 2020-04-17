@@ -24,20 +24,26 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler;
-import io.github.fablabsmc.fablabs.api.networking.v1.HandlerContext;
-import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
-import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public final class BasicPacketReceiver<C extends HandlerContext> implements PacketReceiver<C> {
+import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler;
+import io.github.fablabsmc.fablabs.api.networking.v1.ListenerContext;
+import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.util.Identifier;
+
+public final class BasicPacketReceiver<C extends ListenerContext> implements PacketReceiver<C> {
 
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private final Map<Identifier, ChannelHandler<? super C>> handlers;

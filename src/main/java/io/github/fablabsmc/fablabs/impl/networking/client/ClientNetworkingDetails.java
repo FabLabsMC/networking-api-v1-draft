@@ -24,17 +24,19 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking.client;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.client.LoginS2CContext;
-import io.github.fablabsmc.fablabs.api.networking.v1.client.PlayS2CContext;
+import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientLoginContext;
+import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientPlayContext;
 import io.github.fablabsmc.fablabs.impl.networking.BasicPacketReceiver;
+
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 
 public final class ClientNetworkingDetails {
-	public static final BasicPacketReceiver<LoginS2CContext> LOGIN = new BasicPacketReceiver<>();
-	public static final BasicPacketReceiver<PlayS2CContext> PLAY = new BasicPacketReceiver<>();
+	public static final BasicPacketReceiver<ClientLoginContext> LOGIN = new BasicPacketReceiver<>();
+	public static final BasicPacketReceiver<ClientPlayContext> PLAY = new BasicPacketReceiver<>();
 
 	public static ClientPlayNetworkAddon getAddon(ClientPlayNetworkHandler handler) {
 		return ((ClientPlayNetworkHandlerHook) handler).getAddon();

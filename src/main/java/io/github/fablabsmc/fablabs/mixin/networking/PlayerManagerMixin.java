@@ -24,22 +24,23 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.mixin.networking;
 
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerNetworkingDetails;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.server.PlayerManager;
-import net.minecraft.server.network.ServerPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.minecraft.network.ClientConnection;
+import net.minecraft.server.PlayerManager;
+import net.minecraft.server.network.ServerPlayerEntity;
+
 @Mixin(PlayerManager.class)
 public abstract class PlayerManagerMixin {
-
 	@Inject(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/s2c/play/CustomPayloadS2CPacket;<init>(Lnet/minecraft/util/Identifier;Lnet/minecraft/util/PacketByteBuf;)V"))
-	public void networking$onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
-		ServerNetworkingDetails.getAddon(player.networkHandler).sendRegistration();
+	private void networking$onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo ci) {
+		ServerNetworkingDetails.getAddon(player.networkHandler).onClientReady();
 	}
 }

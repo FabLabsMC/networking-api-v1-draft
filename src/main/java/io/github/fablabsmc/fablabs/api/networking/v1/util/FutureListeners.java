@@ -24,32 +24,70 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1.util;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.local.LocalChannel;
+import io.netty.channel.local.LocalServerChannel;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import net.minecraft.network.ClientConnection;
+
 import net.minecraft.network.PacketByteBuf;
 
+/**
+ * Utilities for working with netty's future listeners.
+ */
 public final class FutureListeners {
-
+	/**
+	 * Returns a future listener that releases a packet byte buf when the buffer has
+	 * been sent to a remote connection.
+	 *
+	 * @param buf the buffer
+	 * @return the future listener
+	 */
 	public static ChannelFutureListener free(PacketByteBuf buf) {
-		return future -> {
-			if (!future.channel().pipeline().get(ClientConnection.class).isLocal()) {
+		return (future) -> {
+			if (!isLocalChannel(future.channel())) {
 				buf.release();
 			}
 		};
 	}
 
-	@SuppressWarnings("unchecked") // A, B exist just to allow casting
+	/**
+	 * Returns whether a netty channel performs local transportation, i.e. the
+	 * message objects in the channel are directly passed than written to and
+	 * read from a byte buf.
+	 *
+	 * @param channel the channel to check
+	 * @return whether the channel is local
+	 */
+	public static boolean isLocalChannel(Channel channel) {
+		return channel instanceof LocalServerChannel || channel instanceof LocalChannel;
+	}
+
+	/**
+	 * Combines two future listeners.
+	 *
+	 * @param first  the first future listener
+	 * @param second the second future listener
+	 * @param <A>    the future type of the first listener, used for casting
+	 * @param <B>    the future type of the second listener, used for casting
+	 * @return the combined future listener.
+	 */
+	@SuppressWarnings("unchecked") // A, B exist just to allow casting lol
 	public static <A extends Future<? super Void>, B extends Future<? super Void>> GenericFutureListener<? extends Future<? super Void>> union(
 			GenericFutureListener<A> first, GenericFutureListener<B> second) {
-		if (first == null)
+		if (first == null) {
 			return second;
-		if (second == null)
+		}
+
+		if (second == null) {
 			return first;
-		return future -> {
+		}
+
+		return (future) -> {
 			first.operationComplete((A) future);
 			second.operationComplete((B) future);
 		};

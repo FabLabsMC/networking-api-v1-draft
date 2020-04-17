@@ -24,13 +24,15 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1.client;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.PlayContext;
+
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 
-public interface PlayS2CContext extends PlayContext, S2CContext {
+public interface ClientPlayContext extends PlayContext, ClientContext {
 
 	@Override
 	ClientPlayerEntity getPlayer();

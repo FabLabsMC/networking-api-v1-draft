@@ -24,21 +24,22 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.HandlerContext;
+import io.github.fablabsmc.fablabs.api.networking.v1.ListenerContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketSender;
-import io.github.fablabsmc.fablabs.api.networking.v1.util.FutureListeners;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import org.jetbrains.annotations.Nullable;
+
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
 
 // server login
-public abstract class AbstractNetworkAddon<C extends HandlerContext> extends ReceivingNetworkAddon<C> implements PacketSender {
+public abstract class AbstractNetworkAddon<C extends ListenerContext> extends ReceivingNetworkAddon<C> implements PacketSender {
 
 	protected final ClientConnection connection;
 
@@ -50,30 +51,12 @@ public abstract class AbstractNetworkAddon<C extends HandlerContext> extends Rec
 	protected abstract Packet<?> makePacket(Identifier channel, PacketByteBuf buf);
 
 	@Override
-	public void sendRawPacket(Identifier channel, PacketByteBuf buf) {
+	public void sendPacket(Identifier channel, PacketByteBuf buf) {
 		this.connection.send(makePacket(channel, buf));
 	}
 
 	@Override
-	public void sendRawPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
+	public void sendPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
 		this.connection.send(makePacket(channel, buf), callback);
-	}
-
-	@Override
-	public void sendClosedPacket(Identifier channel, PacketByteBuf buf) {
-		if (this.connection.isLocal()) {
-			this.sendRawPacket(channel, buf); // Local packet objects are just handed over, so don't release!
-		} else {
-			this.sendRawPacket(channel, buf, f -> buf.release());
-		}
-	}
-
-	@Override
-	public void sendClosedPacket(Identifier channel, PacketByteBuf buf, @Nullable GenericFutureListener<? extends Future<? super Void>> callback) {
-		if (this.connection.isLocal()) {
-			this.sendRawPacket(channel, buf, callback); // Local packet objects are just handed over, so don't release!
-		} else {
-			this.sendRawPacket(channel, buf, FutureListeners.union(f -> buf.release(), callback));
-		}
 	}
 }

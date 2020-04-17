@@ -24,13 +24,17 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking.server;
 
+import java.util.List;
+
 import io.github.fablabsmc.fablabs.api.networking.v1.PlayPacketSender;
-import io.github.fablabsmc.fablabs.api.networking.v1.server.PlayC2SContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
+import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerPlayContext;
 import io.github.fablabsmc.fablabs.impl.networking.AbstractChanneledNetworkAddon;
 import io.github.fablabsmc.fablabs.mixin.networking.access.CustomPayloadC2SPacketAccess;
+
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -40,9 +44,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
-import java.util.List;
-
-public final class ServerPlayNetworkAddon extends AbstractChanneledNetworkAddon<PlayC2SContext> implements PlayC2SContext {
+public final class ServerPlayNetworkAddon extends AbstractChanneledNetworkAddon<ServerPlayContext> implements ServerPlayContext {
 
 	private final ServerPlayNetworkHandler handler;
 
@@ -51,7 +53,10 @@ public final class ServerPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 		this.handler = handler;
 	}
 
-	// also expose sendRegistration
+	public void onClientReady() {
+		ServerNetworking.PLAY_INITIALIZED.invoker().handle(handler);
+		sendRegistration();
+	}
 
 	public boolean handle(CustomPayloadC2SPacket packet) {
 		CustomPayloadC2SPacketAccess access = (CustomPayloadC2SPacketAccess) packet;
@@ -60,7 +65,8 @@ public final class ServerPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 
 	// impl details
 
-	@Override protected void schedule(Runnable task) {
+	@Override
+	protected void schedule(Runnable task) {
 		this.handler.player.server.execute(task);
 	}
 

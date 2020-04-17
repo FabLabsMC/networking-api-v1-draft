@@ -24,11 +24,12 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
 import net.minecraft.entity.player.PlayerEntity;
 
-public interface PlayContext extends HandlerContext {
+public interface PlayContext extends ListenerContext {
 	PlayPacketSender getPacketSender();
 
 	PlayerEntity getPlayer();

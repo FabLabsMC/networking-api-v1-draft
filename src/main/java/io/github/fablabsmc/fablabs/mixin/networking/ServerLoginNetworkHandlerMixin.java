@@ -24,17 +24,13 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.mixin.networking;
 
+import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.DisconnectPacketSource;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerLoginNetworkAddon;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerLoginNetworkHandlerHook;
-import net.minecraft.network.Packet;
-import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
-import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerLoginNetworkHandler;
-import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,35 +38,48 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.minecraft.network.Packet;
+import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
+import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerLoginNetworkHandler;
+import net.minecraft.text.Text;
+
 @Mixin(ServerLoginNetworkHandler.class)
 public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetworkHandlerHook, DisconnectPacketSource {
 
 	private ServerLoginNetworkAddon addon;
 
-	@Shadow public abstract void acceptPlayer();
+	@Shadow
+	public abstract void acceptPlayer();
 
 	@Inject(method = "<init>", at = @At("RETURN"))
-	public void networking$ctor(CallbackInfo ci) {
+	private void networking$ctor(CallbackInfo ci) {
 		this.addon = new ServerLoginNetworkAddon((ServerLoginNetworkHandler) (Object) this);
 	}
 
 	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;acceptPlayer()V"))
-	public void networking$onAcceptPlayer(ServerLoginNetworkHandler handler) {
+	private void networking$onAcceptPlayer(ServerLoginNetworkHandler handler) {
 		if (this.addon.queryTick()) {
 			acceptPlayer();
 		}
 	}
 
-	@Inject(method = "onQueryResponse", at = @At(value = "HEAD"), cancellable = true)
-	public void networking$customPayloadReceivedAsync(LoginQueryResponseC2SPacket packet, CallbackInfo ci) {
+	@Inject(method = "onQueryResponse", at = @At("HEAD"), cancellable = true)
+	private void networking$customPayloadReceivedAsync(LoginQueryResponseC2SPacket packet, CallbackInfo ci) {
 		if (this.addon.handle(packet)) {
 			ci.cancel();
 		}
 	}
 
 	@Redirect(method = "acceptPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getNetworkCompressionThreshold()I", ordinal = 0))
-	public int networking$removeLateCompressionPacketSending(MinecraftServer server) {
+	private int networking$removeLateCompressionPacketSending(MinecraftServer server) {
 		return -1;
+	}
+
+	@Inject(method = "onDisconnected", at = @At("HEAD"))
+	private void networking$onDisconnected(Text reason, CallbackInfo ci) {
+		ServerNetworking.LOGIN_DISCONNECTED.invoker().handle((ServerLoginNetworkHandler) (Object) this);
 	}
 
 	@Override

@@ -24,25 +24,15 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
-package io.github.fablabsmc.fablabs.api.networking.v1.server;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.PacketSender;
-import net.minecraft.server.network.ServerLoginNetworkHandler;
+package io.github.fablabsmc.fablabs.api.networking.v1.client;
 
-import java.util.concurrent.Future;
+import io.github.fablabsmc.fablabs.api.networking.v1.ListenerContext;
 
-public interface LoginC2SContext extends C2SContext {
+import net.minecraft.client.MinecraftClient;
+
+public interface ClientContext extends ListenerContext {
 
 	@Override
-	ServerLoginNetworkHandler getListener();
-
-	PacketSender getPacketSender();
-
-	// packet info
-	int getQueryId();
-
-	boolean isUnderstood();
-
-	// utility
-	void waitFor(Future<?> future);
+	MinecraftClient getEngine();
 }

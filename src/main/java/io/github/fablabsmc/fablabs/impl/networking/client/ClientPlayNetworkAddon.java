@@ -24,12 +24,16 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking.client;
+
+import java.util.List;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.PlayPacketSender;
 import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
-import io.github.fablabsmc.fablabs.api.networking.v1.client.PlayS2CContext;
+import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientPlayContext;
 import io.github.fablabsmc.fablabs.impl.networking.AbstractChanneledNetworkAddon;
+
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -39,19 +43,21 @@ import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.util.Identifier;
 
-import java.util.List;
-
-public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<PlayS2CContext> implements PlayS2CContext {
+public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<ClientPlayContext> implements ClientPlayContext {
 
 	private final ClientPlayNetworkHandler handler;
 
 	public ClientPlayNetworkAddon(ClientPlayNetworkHandler handler) {
 		super(ClientNetworkingDetails.PLAY, handler.getConnection());
 		this.handler = handler;
-		ClientNetworking.PLAY_INITIALIZED.invoker().handle(this.handler);
 	}
 
 	// also expose sendRegistration
+
+	public void onServerReady() {
+		sendRegistration();
+		ClientNetworking.PLAY_INITIALIZED.invoker().handle(this.handler);
+	}
 
 	public boolean handle(CustomPayloadS2CPacket packet) {
 		PacketByteBuf buf = packet.getData();

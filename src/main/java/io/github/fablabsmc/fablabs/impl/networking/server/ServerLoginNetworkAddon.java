@@ -24,10 +24,20 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking.server;
 
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
+
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketSender;
-import io.github.fablabsmc.fablabs.api.networking.v1.server.LoginC2SContext;
+import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerLoginContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
 import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
 import io.github.fablabsmc.fablabs.impl.networking.AbstractNetworkAddon;
@@ -35,6 +45,7 @@ import io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails;
 import io.github.fablabsmc.fablabs.mixin.networking.access.LoginQueryRequestS2CPacketAccess;
 import io.github.fablabsmc.fablabs.mixin.networking.access.LoginQueryResponseC2SPacketAccess;
 import io.github.fablabsmc.fablabs.mixin.networking.access.ServerLoginNetworkHandlerAccess;
+
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
@@ -44,13 +55,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.util.Identifier;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Future;
-
-public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<LoginC2SContext> {
+public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLoginContext> {
 
 	private final ServerLoginNetworkHandler handler;
 	private final MinecraftServer server;
@@ -70,11 +75,33 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<LoginC2S
 	public boolean queryTick() {
 		if (this.firstQueryTick) {
 			this.sendCompressionPacket();
-			ServerNetworking.LOGIN_START.invoker().handle(this.handler);
+			ServerNetworking.LOGIN_QUERY_START.invoker().handle(this.handler);
 			this.firstQueryTick = false;
 		}
 
-		this.waits.removeIf(Future::isDone);
+		AtomicReference<Throwable> error = new AtomicReference<>();
+		this.waits.removeIf(future -> {
+			if (!future.isDone()) {
+				return false;
+			}
+
+			try {
+				future.get();
+			} catch (ExecutionException ex) {
+				Throwable caught = ex.getCause();
+				error.getAndUpdate(oldEx -> {
+					if (oldEx == null) {
+						return caught;
+					}
+
+					oldEx.addSuppressed(caught);
+					return oldEx;
+				});
+			} catch (InterruptedException | CancellationException ignored) {
+			}
+
+			return true;
+		});
 		return this.channels.isEmpty() && this.waits.isEmpty();
 	}
 
@@ -103,7 +130,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<LoginC2S
 	}
 
 	@Override
-	protected Packet<?> makePacket(Identifier channel, PacketByteBuf buf) {
+	public Packet<?> makePacket(Identifier channel, PacketByteBuf buf) {
 		int queryId = queryIdFactory.nextId();
 		channels.put(queryId, channel);
 		LoginQueryRequestS2CPacket ret = new LoginQueryRequestS2CPacket();
@@ -114,7 +141,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<LoginC2S
 		return ret;
 	}
 
-	final class Context implements LoginC2SContext {
+	final class Context implements ServerLoginContext {
 		private final int queryId;
 		private final boolean understood;
 

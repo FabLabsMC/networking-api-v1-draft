@@ -24,38 +24,46 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.mixin.networking;
 
+import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.client.ClientPlayNetworkAddon;
 import io.github.fablabsmc.fablabs.impl.networking.client.ClientPlayNetworkHandlerHook;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
-import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
+import net.minecraft.text.Text;
+
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class ClientPlayNetworkHandlerMixin implements ClientPlayNetworkHandlerHook {
-
 	private ClientPlayNetworkAddon addon;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
-	public void networking$ctor(CallbackInfo ci) {
+	private void networking$ctor(CallbackInfo ci) {
 		this.addon = new ClientPlayNetworkAddon((ClientPlayNetworkHandler) (Object) this);
 	}
 
 	@Inject(method = "onGameJoin", at = @At("RETURN"))
-	public void networking$onServerPlayReady(GameJoinS2CPacket packet, CallbackInfo ci) {
-		this.addon.sendRegistration();
+	private void networking$onServerPlayReady(GameJoinS2CPacket packet, CallbackInfo ci) {
+		this.addon.onServerReady();
 	}
 
-	@Inject(method = "onCustomPayload", at = @At(value = "HEAD"), cancellable = true)
-	public void networking$customPayloadReceivedAsync(CustomPayloadS2CPacket packet, CallbackInfo ci) {
+	@Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)
+	private void networking$customPayloadReceivedAsync(CustomPayloadS2CPacket packet, CallbackInfo ci) {
 		if (this.addon.handle(packet)) {
 			ci.cancel();
 		}
+	}
+
+	@Inject(method = "onDisconnected", at = @At("HEAD"))
+	private void networking$onDisconnected(Text reason, CallbackInfo ci) {
+		ClientNetworking.PLAY_DISCONNECTED.invoker().handle((ClientPlayNetworkHandler) (Object) this);
 	}
 
 	@Override

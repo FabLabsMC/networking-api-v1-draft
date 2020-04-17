@@ -24,16 +24,15 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1.server;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.PlayContext;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
+import io.github.fablabsmc.fablabs.api.networking.v1.ListenerContext;
 
-public interface PlayC2SContext extends C2SContext, PlayContext {
-	@Override
-	ServerPlayerEntity getPlayer();
+import net.minecraft.server.MinecraftServer;
+
+public interface ServerContext extends ListenerContext {
 
 	@Override
-	ServerPlayNetworkHandler getListener();
+	MinecraftServer getEngine();
 }

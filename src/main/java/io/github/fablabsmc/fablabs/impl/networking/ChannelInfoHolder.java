@@ -24,11 +24,12 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking;
 
-import net.minecraft.util.Identifier;
-
 import java.util.Collection;
+
+import net.minecraft.util.Identifier;
 
 public interface ChannelInfoHolder {
 	Collection<Identifier> getChannels();
