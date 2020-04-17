@@ -34,8 +34,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
 public interface PacketSender {
-	// don't expose sendPacket(Packet<?>) as to avoid sending potentially bad packets and messing things up
-
 	void sendPacket(Identifier channel, PacketByteBuf buf);
 
 	// the generic future listener can accept ChannelFutureListener

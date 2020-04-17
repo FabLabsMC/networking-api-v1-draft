@@ -105,7 +105,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 javadoc {
     source = sourceSets.main.allJava
-    classpath = sourceSets.main.compileClasspath
+    classpath = sourceSets.main.compileClasspath + sourceSets.main.output
 
     options {
         source = "8"
@@ -117,14 +117,15 @@ javadoc {
         }
         links(
                 'https://guava.dev/releases/21.0/api/docs/',
-                'http://asm.ow2.org/asm50/javadoc/user/',
+                'https://asm.ow2.io/javadoc/',
                 'https://docs.oracle.com/javase/8/docs/api/',
-                'http://jenkins.liteloader.com/job/Mixin/javadoc/',
                 'https://logging.apache.org/log4j/2.x/log4j-api/apidocs/',
+                'https://netty.io/4.1/api/',
                 'https://modmuss50.me/fabric-api-0.4.30+local-1.16-fatjavadoc/'
                 // Need to add minecraft jd publication once there is one available
         )
     }
+    include("**/api/**")
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {

@@ -55,7 +55,7 @@ public final class FutureListeners {
 	}
 
 	/**
-	 * Returns whether a netty channel performs local transportation, i.e. the
+	 * Returns whether a netty channel performs local transportation, or if the
 	 * message objects in the channel are directly passed than written to and
 	 * read from a byte buf.
 	 *
