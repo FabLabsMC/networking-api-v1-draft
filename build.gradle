@@ -142,7 +142,7 @@ afterEvaluate {
         archives(sourcesJar) {
             builtBy remapSourcesJar
         } // wait for loom pr
-        archives javadocsJar
+        archives javadocJar
     }
 }
 
