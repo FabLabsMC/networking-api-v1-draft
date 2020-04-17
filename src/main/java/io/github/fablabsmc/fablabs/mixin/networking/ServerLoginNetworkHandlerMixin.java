@@ -35,30 +35,25 @@ import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.text.Text;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerLoginNetworkHandler.class)
 public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetworkHandlerHook, DisconnectPacketSource {
 
-	@Shadow @Final @Mutable private String field_14165;
+	private ServerLoginNetworkAddon addon;
 
 	@Shadow public abstract void acceptPlayer();
-
-	private ServerLoginNetworkAddon addon;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	public void networking$ctor(CallbackInfo ci) {
 		this.addon = new ServerLoginNetworkAddon((ServerLoginNetworkHandler) (Object) this);
 	}
-	
+
 	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;acceptPlayer()V"))
 	public void networking$onAcceptPlayer(ServerLoginNetworkHandler handler) {
 		if (this.addon.queryTick()) {
@@ -73,11 +68,6 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
 		}
 	}
 
-	@ModifyArg(method = "onHello", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/packet/s2c/login/LoginHelloS2CPacket;<init>(Ljava/lang/String;Ljava/security/PublicKey;[B)V"), index = 0)
-	public String networking$redirectServerId(String oldId) {
-		return this.field_14165;
-	}
-	
 	@Redirect(method = "acceptPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getNetworkCompressionThreshold()I", ordinal = 0))
 	public int networking$removeLateCompressionPacketSending(MinecraftServer server) {
 		return -1;
@@ -88,7 +78,7 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
 		return this.addon;
 	}
 
-	@Override 
+	@Override
 	public Packet<?> makeDisconnectPacket(Text message) {
 		return new LoginDisconnectS2CPacket(message);
 	}

@@ -30,7 +30,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 public final class FutureListeners {
 
@@ -42,7 +42,7 @@ public final class FutureListeners {
 		};
 	}
 
-	@SuppressWarnings("unchecked") // A, B exist just to allow casting lol
+	@SuppressWarnings("unchecked") // A, B exist just to allow casting
 	public static <A extends Future<? super Void>, B extends Future<? super Void>> GenericFutureListener<? extends Future<? super Void>> union(
 			GenericFutureListener<A> first, GenericFutureListener<B> second) {
 		if (first == null)

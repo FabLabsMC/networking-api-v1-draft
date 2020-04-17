@@ -34,25 +34,25 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 
 import java.util.List;
 
 public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<PlayS2CContext> implements PlayS2CContext {
-	
+
 	private final ClientPlayNetworkHandler handler;
-	
+
 	public ClientPlayNetworkAddon(ClientPlayNetworkHandler handler) {
 		super(ClientNetworkingDetails.PLAY, handler.getConnection());
 		this.handler = handler;
 		ClientNetworking.PLAY_INITIALIZED.invoker().handle(this.handler);
 	}
-	
+
 	// also expose sendRegistration
-	
+
 	public boolean handle(CustomPayloadS2CPacket packet) {
 		PacketByteBuf buf = packet.getData();
 		try {
@@ -61,7 +61,7 @@ public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 			buf.release();
 		}
 	}
-	
+
 	// impl details
 
 	@Override
@@ -74,16 +74,16 @@ public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 		return new CustomPayloadC2SPacket(channel, buf);
 	}
 
-	@Override 
+	@Override
 	protected void postRegisterEvent(List<Identifier> ids) {
 		ClientNetworking.CHANNEL_REGISTERED.invoker().handle(handler, ids);
 	}
 
-	@Override 
+	@Override
 	protected void postUnregisterEvent(List<Identifier> ids) {
 		ClientNetworking.CHANNEL_UNREGISTERED.invoker().handle(handler, ids);
 	}
-	
+
 	// context stuff
 
 	@Override
@@ -96,7 +96,7 @@ public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 		return this.handler;
 	}
 
-	@Override 
+	@Override
 	public PlayPacketSender getPacketSender() {
 		return this;
 	}

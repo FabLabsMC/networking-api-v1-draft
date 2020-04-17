@@ -29,8 +29,8 @@ package io.github.fablabsmc.fablabs.impl.networking;
 import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler;
 import io.github.fablabsmc.fablabs.api.networking.v1.HandlerContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 
 // client login
 public abstract class ReceivingNetworkAddon<C extends HandlerContext> {
@@ -54,7 +54,7 @@ public abstract class ReceivingNetworkAddon<C extends HandlerContext> {
 			NetworkingDetails.LOGGER.error("Encountered exception while handling in channel \"{}\"", channel, ex);
 			handler.rethrow(ex);
 		}
-		
+
 		return true;
 	}
 }

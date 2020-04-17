@@ -26,28 +26,27 @@
  */
 package io.github.fablabsmc.fablabs.mixin.networking.access;
 
-import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(LoginQueryRequestS2CPacket.class)
 public interface LoginQueryRequestS2CPacketAccess {
-	
+
 	@Accessor
 	Identifier getChannel();
-	
-	@Accessor
-	PacketByteBuf getPayload();
-	
+
 	@Accessor
 	void setChannel(Identifier channel);
-	
+
+	@Accessor
+	PacketByteBuf getPayload();
+
 	@Accessor
 	void setPayload(PacketByteBuf payload);
-	
+
 	@Accessor
 	void setQueryId(int queryId);
 }

@@ -35,11 +35,11 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 public final class ClientNetworkingDetails {
 	public static final BasicPacketReceiver<LoginS2CContext> LOGIN = new BasicPacketReceiver<>();
 	public static final BasicPacketReceiver<PlayS2CContext> PLAY = new BasicPacketReceiver<>();
-	
+
 	public static ClientPlayNetworkAddon getAddon(ClientPlayNetworkHandler handler) {
 		return ((ClientPlayNetworkHandlerHook) handler).getAddon();
 	}
-	
+
 	public static ClientLoginNetworkAddon getAddon(ClientLoginNetworkHandler handler) {
 		return ((ClientLoginNetworkHandlerHook) handler).getAddon();
 	}

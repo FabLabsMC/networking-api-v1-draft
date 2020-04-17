@@ -32,32 +32,32 @@ import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.AbstractChanneledNetworkAddon;
 import io.github.fablabsmc.fablabs.mixin.networking.access.CustomPayloadC2SPacketAccess;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 
 import java.util.List;
 
 public final class ServerPlayNetworkAddon extends AbstractChanneledNetworkAddon<PlayC2SContext> implements PlayC2SContext {
-	
+
 	private final ServerPlayNetworkHandler handler;
-	
+
 	public ServerPlayNetworkAddon(ServerPlayNetworkHandler handler) {
 		super(ServerNetworkingDetails.PLAY, handler.getConnection());
 		this.handler = handler;
 	}
 
 	// also expose sendRegistration
-	
+
 	public boolean handle(CustomPayloadC2SPacket packet) {
 		CustomPayloadC2SPacketAccess access = (CustomPayloadC2SPacketAccess) packet;
 		return handle(access.getChannel(), access.getData(), this);
 	}
-	
+
 	// impl details
 
 	@Override protected void schedule(Runnable task) {
@@ -78,7 +78,7 @@ public final class ServerPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 	protected void postUnregisterEvent(List<Identifier> ids) {
 		ServerNetworking.CHANNEL_UNREGISTERED.invoker().handle(handler, ids);
 	}
-	
+
 	// context
 
 	@Override

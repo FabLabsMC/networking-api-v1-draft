@@ -33,13 +33,13 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(ServerLoginNetworkHandler.class)
 public interface ServerLoginNetworkHandlerAccess {
-	
+
 	@Accessor
 	MinecraftServer getServer();
-	
+
 	@Accessor("field_14165")
 	String getServerId();
-	
+
 	@Accessor("field_14165")
 	void setServerId(String serverId);
 }

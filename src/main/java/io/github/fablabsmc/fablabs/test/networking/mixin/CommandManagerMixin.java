@@ -26,8 +26,8 @@
  */
 package io.github.fablabsmc.fablabs.test.networking.mixin;
 
-import io.github.fablabsmc.fablabs.test.networking.NetworkingUser;
 import com.mojang.brigadier.CommandDispatcher;
+import io.github.fablabsmc.fablabs.test.networking.NetworkingUser;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import org.spongepowered.asm.mixin.Final;

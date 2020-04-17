@@ -33,7 +33,7 @@ import static io.github.fablabsmc.fablabs.test.networking.NetworkingUser.TEST_CH
 
 public final class NetworkingClientUser implements ClientModInitializer {
 
-	@Override 
+	@Override
 	public void onInitializeClient() {
 		ClientNetworking.getPlayReceiver().register(TEST_CHANNEL, (context, buf) -> {
 			String message = buf.readString(32767);

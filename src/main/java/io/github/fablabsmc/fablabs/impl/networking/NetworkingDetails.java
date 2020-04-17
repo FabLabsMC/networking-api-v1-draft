@@ -33,8 +33,8 @@ import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
 import io.github.fablabsmc.fablabs.impl.networking.client.ClientNetworkingDetails;
 import io.github.fablabsmc.fablabs.impl.networking.server.QueryIdFactory;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerNetworkingDetails;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,12 +45,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public final class NetworkingDetails {
 
-	public static final Logger LOGGER = LogManager.getLogger("Networking API v1 Draft");
+	public static final String MOD_ID = "networking-api-v1-draft";
+	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 	public static final Identifier REGISTER_CHANNEL = new Identifier("minecraft", "register");
 	public static final Identifier UNREGISTER_CHANNEL = new Identifier("minecraft", "unregister");
-	public static final Identifier EARLY_REGISTRATION_CHANNEL = new Identifier("networking-api-v1-draft", "early_registration");
+	public static final Identifier EARLY_REGISTRATION_CHANNEL = new Identifier(MOD_ID, "early_registration");
 	public static final boolean WARN_UNREGISTERED_PACKETS = Boolean
-			.parseBoolean(System.getProperty("fablabsmc.networkingapi.warnUnregisteredPackets", "true"));
+			.parseBoolean(System.getProperty(MOD_ID + ".warnUnregisteredPackets", "true"));
 
 	public static QueryIdFactory createQueryIdManager() {
 		// todo incremental ids or randomized

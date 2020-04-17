@@ -36,13 +36,13 @@ import io.github.fablabsmc.fablabs.mixin.networking.access.LoginQueryRequestS2CP
 import io.github.fablabsmc.fablabs.mixin.networking.access.LoginQueryResponseC2SPacketAccess;
 import io.github.fablabsmc.fablabs.mixin.networking.access.ServerLoginNetworkHandlerAccess;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
 import net.minecraft.network.packet.s2c.login.LoginCompressionS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 
 import java.util.Collection;
 import java.util.Map;
@@ -65,7 +65,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<LoginC2S
 		this.server = ((ServerLoginNetworkHandlerAccess) handler).getServer();
 		this.queryIdFactory = NetworkingDetails.createQueryIdManager();
 	}
-	
+
 	// return true if no longer ticks query
 	public boolean queryTick() {
 		if (this.firstQueryTick) {
@@ -77,7 +77,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<LoginC2S
 		this.waits.removeIf(Future::isDone);
 		return this.channels.isEmpty() && this.waits.isEmpty();
 	}
-	
+
 	private void sendCompressionPacket() {
 		if (this.server.getNetworkCompressionThreshold() >= 0 && !this.connection.isLocal()) {
 			this.connection.send(new LoginCompressionS2CPacket(this.server.getNetworkCompressionThreshold()), (channelFuture) -> {

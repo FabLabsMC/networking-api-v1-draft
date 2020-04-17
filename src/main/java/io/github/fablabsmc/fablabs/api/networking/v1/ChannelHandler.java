@@ -26,7 +26,7 @@
  */
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 public interface ChannelHandler<C extends HandlerContext> {
 

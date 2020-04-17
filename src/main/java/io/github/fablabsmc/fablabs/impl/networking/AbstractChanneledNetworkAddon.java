@@ -32,9 +32,9 @@ import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
 import io.netty.util.AsciiString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.PacketByteBuf;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -53,7 +53,7 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 		super(receiver, connection);
 		this.sendableChannels = sendableChannels;
 		this.sendableChannelsView = Collections.unmodifiableSet(sendableChannels);
-		
+
 		Collection<Identifier> pending = ((ChannelInfoHolder) connection).getChannels();
 		if (!pending.isEmpty()) {
 			register(new ArrayList<>(pending));

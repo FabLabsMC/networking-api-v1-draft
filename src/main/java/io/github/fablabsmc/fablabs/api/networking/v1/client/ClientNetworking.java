@@ -30,33 +30,34 @@ import io.github.fablabsmc.fablabs.api.networking.v1.PacketChannelCallback;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketListenerCallback;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
 import io.github.fablabsmc.fablabs.api.networking.v1.PlayPacketSender;
-import io.github.fablabsmc.fablabs.api.networking.v1.util.Event;
 import io.github.fablabsmc.fablabs.impl.networking.client.ClientNetworkingDetails;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 
 public final class ClientNetworking {
 
-	public static final Event<PacketListenerCallback<ClientPlayNetworkHandler>> PLAY_INITIALIZED = Event
+	public static final Event<PacketListenerCallback<ClientPlayNetworkHandler>> PLAY_INITIALIZED = EventFactory
 			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
 				for (PacketListenerCallback<ClientPlayNetworkHandler> callback : callbacks) {
 					callback.handle(handler);
 				}
 			});
-	public static final Event<PacketListenerCallback<ClientPlayNetworkHandler>> PLAY_DISCONNECTED = Event
+	public static final Event<PacketListenerCallback<ClientPlayNetworkHandler>> PLAY_DISCONNECTED = EventFactory
 			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
 				for (PacketListenerCallback<ClientPlayNetworkHandler> callback : callbacks) {
 					callback.handle(handler);
 				}
 			});
-	public static final Event<PacketChannelCallback<ClientPlayNetworkHandler>> CHANNEL_REGISTERED = Event
+	public static final Event<PacketChannelCallback<ClientPlayNetworkHandler>> CHANNEL_REGISTERED = EventFactory
 			.createArrayBacked(PacketChannelCallback.class, callbacks -> (handler, channels) -> {
 				for (PacketChannelCallback<ClientPlayNetworkHandler> callback : callbacks) {
 					callback.handle(handler, channels);
 				}
 			});
-	public static final Event<PacketChannelCallback<ClientPlayNetworkHandler>> CHANNEL_UNREGISTERED = Event
+	public static final Event<PacketChannelCallback<ClientPlayNetworkHandler>> CHANNEL_UNREGISTERED = EventFactory
 			.createArrayBacked(PacketChannelCallback.class, callbacks -> (handler, channels) -> {
 				for (PacketChannelCallback<ClientPlayNetworkHandler> callback : callbacks) {
 					callback.handle(handler, channels);

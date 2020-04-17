@@ -34,27 +34,27 @@ import io.netty.util.concurrent.GenericFutureListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 
 import java.util.concurrent.CompletableFuture;
 
 public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<LoginS2CContext> {
-	
+
 	private final ClientLoginNetworkHandler handler;
 
 	public ClientLoginNetworkAddon(ClientLoginNetworkHandler handler) {
 		super(ClientNetworkingDetails.LOGIN);
 		this.handler = handler;
 	}
-	
+
 	public boolean handlePacket(LoginQueryRequestS2CPacket packet) {
 		LoginQueryRequestS2CPacketAccess access = (LoginQueryRequestS2CPacketAccess) packet;
 		return handlePacket(packet.getQueryId(), access.getChannel(), access.getPayload());
 	}
-	
+
 	private boolean handlePacket(int queryId, Identifier channel, PacketByteBuf originalBuf) {
 		try (Context context = new Context(queryId)) {
 			return handle(channel, originalBuf, context);
@@ -62,10 +62,10 @@ public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<LoginS2
 	}
 
 	final class Context implements LoginS2CContext, AutoCloseable {
-	
+
 		private final int queryId;
 		private boolean responded;
-	
+
 		Context(int queryId) {
 			this.queryId = queryId;
 			this.responded = false;
@@ -77,33 +77,33 @@ public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<LoginS2
 				respond((PacketByteBuf) null);
 			}
 		}
-	
+
 		@Override
 		public ClientLoginNetworkHandler getListener() {
 			return ClientLoginNetworkAddon.this.handler;
 		}
-	
+
 		@Override
 		public int getQueryId() {
 			return this.queryId;
 		}
-	
+
 		@Override
 		public void respond(PacketByteBuf buf) {
 			respond(buf, null);
 		}
-	
+
 		@Override
 		public void respond(CompletableFuture<? extends PacketByteBuf> future) {
 			respond(future, null);
 		}
-	
+
 		@Override
 		public void respond(PacketByteBuf buf, GenericFutureListener<? extends Future<? super Void>> callback) {
 			handler.getConnection().send(buildPacket(buf), callback);
 			this.responded = true;
 		}
-	
+
 		@Override
 		public void respond(CompletableFuture<? extends PacketByteBuf> future, GenericFutureListener<? extends Future<? super Void>> callback) {
 			ClientConnection connection = handler.getConnection();
@@ -111,17 +111,17 @@ public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<LoginS2
 				if (ex != null || buf == null) {
 					throw new RuntimeException(ex);
 				}
-	
+
 				connection.send(buildPacket(buf), callback);
 			});
 			this.responded = true;
 		}
-	
+
 		@Override
 		public MinecraftClient getEngine() {
 			return MinecraftClient.getInstance(); // may need update in the future?
 		}
-	
+
 		private LoginQueryResponseC2SPacket buildPacket(PacketByteBuf buf) {
 			return new LoginQueryResponseC2SPacket(this.queryId, buf);
 		}

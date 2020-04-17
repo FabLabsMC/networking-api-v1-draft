@@ -37,14 +37,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientLoginNetworkHandler.class)
 public abstract class ClientLoginNetworkHandlerMixin implements ClientLoginNetworkHandlerHook {
-	
+
 	private ClientLoginNetworkAddon addon;
-	
+
 	@Inject(method = "<init>", at = @At("RETURN"))
 	public void networking$ctor(CallbackInfo ci) {
 		this.addon = new ClientLoginNetworkAddon((ClientLoginNetworkHandler) (Object) this);
 	}
-	
+
 	@Inject(method = "onQueryRequest", at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V", remap = false, shift = At.Shift.AFTER), cancellable = true)
 	public void networking$onQueryRequest(LoginQueryRequestS2CPacket packet, CallbackInfo ci) {
 		if (this.addon.handlePacket(packet)) {
@@ -52,7 +52,7 @@ public abstract class ClientLoginNetworkHandlerMixin implements ClientLoginNetwo
 		}
 	}
 
-	@Override 
+	@Override
 	public ClientLoginNetworkAddon getAddon() {
 		return this.addon;
 	}

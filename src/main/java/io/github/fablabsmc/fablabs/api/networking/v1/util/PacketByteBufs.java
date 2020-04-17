@@ -28,7 +28,7 @@ package io.github.fablabsmc.fablabs.api.networking.v1.util;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import net.minecraft.util.PacketByteBuf;
+import net.minecraft.network.PacketByteBuf;
 
 /**
  * Utility methods for working with packet byte bufs.

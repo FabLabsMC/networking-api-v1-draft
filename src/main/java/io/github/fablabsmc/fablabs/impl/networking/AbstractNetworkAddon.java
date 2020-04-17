@@ -33,8 +33,8 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 import org.jetbrains.annotations.Nullable;
 
 // server login

@@ -27,6 +27,6 @@
 package io.github.fablabsmc.fablabs.impl.networking.server;
 
 public interface ServerLoginNetworkHandlerHook {
-	
+
 	ServerLoginNetworkAddon getAddon();
 }

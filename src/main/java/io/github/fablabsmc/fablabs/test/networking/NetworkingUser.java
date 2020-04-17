@@ -26,26 +26,26 @@
  */
 package io.github.fablabsmc.fablabs.test.networking;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
-import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
-import io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
+import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
+import io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.PacketByteBuf;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public final class NetworkingUser implements ModInitializer {
-	
+
 	public static final String ID = "networking-api-v1-draft";
-	private static final Logger LOGGER = LogManager.getLogger(ID);
 	public static final Identifier TEST_CHANNEL = id("test_channel");
+	private static final Logger LOGGER = LogManager.getLogger(ID);
 
 	public static Identifier id(String name) {
 		return new Identifier(ID, name);

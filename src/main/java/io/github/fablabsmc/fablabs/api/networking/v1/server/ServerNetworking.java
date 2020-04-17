@@ -27,11 +27,12 @@
 package io.github.fablabsmc.fablabs.api.networking.v1.server;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.*;
-import io.github.fablabsmc.fablabs.api.networking.v1.util.Event;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerLoginNetworkHandlerHook;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerNetworkingDetails;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerPlayNetworkHandlerHook;
 import io.github.fablabsmc.fablabs.mixin.networking.access.ServerLoginNetworkHandlerAccess;
+import net.fabricmc.fabric.api.event.Event;
+import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -39,43 +40,43 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public final class ServerNetworking {
 
-	public static final Event<PacketChannelCallback<ServerPlayNetworkHandler>> CHANNEL_REGISTERED = Event
+	public static final Event<PacketChannelCallback<ServerPlayNetworkHandler>> CHANNEL_REGISTERED = EventFactory
 			.createArrayBacked(PacketChannelCallback.class, callbacks -> (handler, channels) -> {
 				for (PacketChannelCallback<ServerPlayNetworkHandler> callback : callbacks) {
 					callback.handle(handler, channels);
 				}
 			});
-	public static final Event<PacketChannelCallback<ServerPlayNetworkHandler>> CHANNEL_UNREGISTERED = Event
+	public static final Event<PacketChannelCallback<ServerPlayNetworkHandler>> CHANNEL_UNREGISTERED = EventFactory
 			.createArrayBacked(PacketChannelCallback.class, callbacks -> (handler, channels) -> {
 				for (PacketChannelCallback<ServerPlayNetworkHandler> callback : callbacks) {
 					callback.handle(handler, channels);
 				}
 			});
-	public static final Event<PacketListenerCallback<ServerPlayNetworkHandler>> PLAY_INITIALIZED = Event
+	public static final Event<PacketListenerCallback<ServerPlayNetworkHandler>> PLAY_INITIALIZED = EventFactory
 			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
 				for (PacketListenerCallback<ServerPlayNetworkHandler> callback : callbacks) {
 					callback.handle(handler);
 				}
 			});
-	public static final Event<PacketListenerCallback<ServerPlayNetworkHandler>> PLAY_DISCONNECTED = Event
+	public static final Event<PacketListenerCallback<ServerPlayNetworkHandler>> PLAY_DISCONNECTED = EventFactory
 			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
 				for (PacketListenerCallback<ServerPlayNetworkHandler> callback : callbacks) {
 					callback.handle(handler);
 				}
 			});
-	public static final Event<PacketListenerCallback<ServerLoginNetworkHandler>> LOGIN_INITIALIZED = Event
+	public static final Event<PacketListenerCallback<ServerLoginNetworkHandler>> LOGIN_INITIALIZED = EventFactory
 			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
 				for (PacketListenerCallback<ServerLoginNetworkHandler> callback : callbacks) {
 					callback.handle(handler);
 				}
 			});
-	public static final Event<PacketListenerCallback<ServerLoginNetworkHandler>> LOGIN_START = Event
+	public static final Event<PacketListenerCallback<ServerLoginNetworkHandler>> LOGIN_START = EventFactory
 			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
 				for (PacketListenerCallback<ServerLoginNetworkHandler> callback : callbacks) {
 					callback.handle(handler);
 				}
 			});
-	public static final Event<PacketListenerCallback<ServerLoginNetworkHandler>> LOGIN_DISCONNECTED = Event
+	public static final Event<PacketListenerCallback<ServerLoginNetworkHandler>> LOGIN_DISCONNECTED = EventFactory
 			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
 				for (PacketListenerCallback<ServerLoginNetworkHandler> callback : callbacks) {
 					callback.handle(handler);

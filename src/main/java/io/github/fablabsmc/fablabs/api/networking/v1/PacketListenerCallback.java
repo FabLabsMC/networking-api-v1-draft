@@ -29,6 +29,6 @@ package io.github.fablabsmc.fablabs.api.networking.v1;
 import net.minecraft.network.listener.PacketListener;
 
 public interface PacketListenerCallback<L extends PacketListener> {
-	
+
 	void handle(L handler);
 }

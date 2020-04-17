@@ -38,14 +38,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class ClientPlayNetworkHandlerMixin implements ClientPlayNetworkHandlerHook {
-	
+
 	private ClientPlayNetworkAddon addon;
-	
+
 	@Inject(method = "<init>", at = @At("RETURN"))
 	public void networking$ctor(CallbackInfo ci) {
 		this.addon = new ClientPlayNetworkAddon((ClientPlayNetworkHandler) (Object) this);
 	}
-	
+
 	@Inject(method = "onGameJoin", at = @At("RETURN"))
 	public void networking$onServerPlayReady(GameJoinS2CPacket packet, CallbackInfo ci) {
 		this.addon.sendRegistration();
@@ -58,7 +58,7 @@ public abstract class ClientPlayNetworkHandlerMixin implements ClientPlayNetwork
 		}
 	}
 
-	@Override 
+	@Override
 	public ClientPlayNetworkAddon getAddon() {
 		return this.addon;
 	}

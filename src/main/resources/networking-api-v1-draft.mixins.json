@@ -10,7 +10,6 @@
     "ClientConnectionMixin",
     "PlayerManagerMixin",
     "ServerLoginNetworkHandlerMixin",
-    "ServerLoginNetworkHandlerThreadMixin",
     "ServerPlayNetworkHandlerMixin"
   ],
   "client": [

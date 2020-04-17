@@ -34,7 +34,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 public final class ServerNetworkingDetails {
 	public static final BasicPacketReceiver<LoginC2SContext> LOGIN = new BasicPacketReceiver<>();
 	public static final BasicPacketReceiver<PlayC2SContext> PLAY = new BasicPacketReceiver<>();
-	
+
 	public static ServerPlayNetworkAddon getAddon(ServerPlayNetworkHandler handler) {
 		return ((ServerPlayNetworkHandlerHook) handler).getAddon();
 	}
