@@ -24,7 +24,6 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
-
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
 public interface PlayPacketSender extends PacketSender, ChannelAware {

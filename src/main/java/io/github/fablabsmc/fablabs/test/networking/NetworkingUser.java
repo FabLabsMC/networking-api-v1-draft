@@ -24,7 +24,6 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
-
 package io.github.fablabsmc.fablabs.test.networking;
 
 import com.mojang.brigadier.Command;
