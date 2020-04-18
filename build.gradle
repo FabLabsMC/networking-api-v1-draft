@@ -156,7 +156,7 @@ bintray {
         repo = project.bintrayRepo
         name = project.name
         user = bintray.user
-        userOrg = project.repoOwner
+        userOrg = "liachmodded"
         licenses = [project.codeLicense]
         desc = project.description
         websiteUrl = "https://github.com/${project.repoOwner}/${project.repoName}"

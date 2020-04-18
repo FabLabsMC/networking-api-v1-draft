@@ -1,8 +1,6 @@
 language: java
-dist: trusty
-sudo: required
 jdk:
-- oraclejdk8
+- openjdk14
 git:
   quiet: true
 before_cache:
@@ -16,7 +14,7 @@ jobs:
   include:
   - stage: deploy
     before_install: sudo apt-get install pandoc
-    install: pandoc --from markdown --to html4 --standalone -o readme.html README.md
+    install: pandoc --from markdown --to html --standalone -o readme.html README.md
     script: "./gradlew javadoc build bintrayUpload publishMavenGitHubPublicationToGitHubRepository -S -i"
     deploy:
       - provider: pages
