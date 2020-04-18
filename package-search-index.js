@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"io.github.fablabsmc.fablabs.api.networking.v1"},{"l":"io.github.fablabsmc.fablabs.api.networking.v1.client"},{"l":"io.github.fablabsmc.fablabs.api.networking.v1.server"},{"l":"io.github.fablabsmc.fablabs.api.networking.v1.util"}]

@@ -1,0 +1,4 @@
+io.github.fablabsmc.fablabs.api.networking.v1
+io.github.fablabsmc.fablabs.api.networking.v1.client
+io.github.fablabsmc.fablabs.api.networking.v1.server
+io.github.fablabsmc.fablabs.api.networking.v1.util
