@@ -236,7 +236,7 @@ publishing {
                 name = "GitHub"
                 url = uri("https://maven.pkg.github.com/${project.repoOwner}/${project.repoName}")
                 credentials {
-                    username = System.getenv('USERNAME')
+                    username = System.getenv('GITHUB_USERNAME')
                     password = System.getenv('GITHUB_OAUTH_TOKEN')
                 }
             }
