@@ -6,7 +6,7 @@ A proof-of-concept mod made for [Fabric API Networking API v1 pull request](http
 
 ## Usage
 
-Find it on [Bintray](https://dl.bintray.com/liachmodded/doublecart/com/github/liachmodded/networking-api-v1-draft)
+Find it on [Bintray](https://dl.bintray.com/liachmodded/doublecart/io/github/fablabsmc/networking-api-v1-draft)
 
 In `build.gradle`:
 ```gradle
@@ -17,6 +17,6 @@ repositories {
 }
 
 dependencies {
-    modApi "com.github.liachmodded:networking-api-v1-draft:<your desired version>"
+    modApi "io.github.fablabsmc:networking-api-v1-draft:<your desired version>"
 }
 ```
