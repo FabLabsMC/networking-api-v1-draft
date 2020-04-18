@@ -31,10 +31,31 @@ import io.github.fablabsmc.fablabs.api.networking.v1.PlayContext;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 
+/**
+ * Represents the context for {@link ServerNetworking#getPlayReceiver()}, in which a
+ * {@link net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket client to server
+ * custom payload packet} is received.
+ *
+ * @see ServerNetworking#getPlayReceiver()
+ */
 public interface ServerPlayContext extends ServerContext, PlayContext {
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>In the server play context, the player is always a server player
+	 * associated with the {@link #getListener() network handler}.</p>
+	 *
+	 * @return a server player
+	 */
 	@Override
 	ServerPlayerEntity getPlayer();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>In the client play context, the packet listener is always a {@link
+	 * ServerPlayNetworkHandler}.</p>
+	 */
 	@Override
 	ServerPlayNetworkHandler getListener();
 }

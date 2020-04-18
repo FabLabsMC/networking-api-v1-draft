@@ -119,7 +119,8 @@ javadoc {
                 'https://docs.oracle.com/javase/8/docs/api/',
                 'https://logging.apache.org/log4j/2.x/log4j-api/apidocs/',
                 'https://netty.io/4.1/api/',
-                'https://modmuss50.me/fabric-api-0.4.30+local-1.16-fatjavadoc/'
+                "https://maven.fabricmc.net/docs/fabric-api-${project.apiVersion}/",
+                "https://maven.fabricmc.net/docs/yarn-${project.yarnMappings}/"
                 // Need to add minecraft jd publication once there is one available
         )
     }

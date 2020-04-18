@@ -34,12 +34,22 @@ import io.netty.util.concurrent.GenericFutureListener;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
+/**
+ * Supports sending packets to channels in the play network handlers.
+ *
+ * <p>Compared to a simple packet sender, the play packet sender is informed
+ * if its connected recipient may {@link #hasChannel(Identifier) accept packets
+ * in certain channels}. When the {@code networking-api-v1-draft.warnUnregisteredPackets}
+ * system property is absent or set to {@code true} and the recipient did not
+ * declare its ability to receive packets in a channel a packet was sent in, a
+ * warning is logged.</p>
+ */
 public interface PlayPacketSender extends PacketSender, ChannelAware {
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * <p>When the {@code networking-api-v1-draft.warnUnregisteredPackets} system
-	 * property is absent of set to {@code true} and the {@code channel} is not
+	 * property is absent or set to {@code true} and the {@code channel} is not
 	 * {@linkplain #hasChannel(Identifier) registered}, a warning will be logged.</p>
 	 *
 	 * @param channel the id of the channel
@@ -50,9 +60,9 @@ public interface PlayPacketSender extends PacketSender, ChannelAware {
 
 	/**
 	 * {@inheritDoc}
-	 * 
+	 *
 	 * <p>When the {@code networking-api-v1-draft.warnUnregisteredPackets} system
-	 * property is absent of set to {@code true} and the {@code channel} is not
+	 * property is absent or set to {@code true} and the {@code channel} is not
 	 * {@linkplain #hasChannel(Identifier) registered}, a warning will be logged.</p>
 	 *
 	 * @param channel the id of the channel

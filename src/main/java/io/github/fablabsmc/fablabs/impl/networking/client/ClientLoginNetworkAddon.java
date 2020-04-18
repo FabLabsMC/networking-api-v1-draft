@@ -109,11 +109,11 @@ public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<ClientL
 		public void respond(CompletableFuture<? extends PacketByteBuf> future, GenericFutureListener<? extends Future<? super Void>> callback) {
 			ClientConnection connection = handler.getConnection();
 			future.whenCompleteAsync((buf, ex) -> {
-				if (ex != null || buf == null) {
-					throw new RuntimeException(ex);
-					// todo how to handle?
+				if (!connection.isOpen()) {
+					return;
 				}
 
+				// if an exception occurs, just... respond a "not understood" packet
 				connection.send(buildPacket(buf), callback);
 			});
 			this.responded = true;
@@ -124,7 +124,7 @@ public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<ClientL
 			return MinecraftClient.getInstance(); // may need update in the future?
 		}
 
-		private LoginQueryResponseC2SPacket buildPacket(PacketByteBuf buf) {
+		private LoginQueryResponseC2SPacket buildPacket(/* Nullable */ PacketByteBuf buf) {
 			return new LoginQueryResponseC2SPacket(this.queryId, buf);
 		}
 	}

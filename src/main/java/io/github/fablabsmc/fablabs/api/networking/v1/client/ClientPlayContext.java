@@ -31,11 +31,37 @@ import io.github.fablabsmc.fablabs.api.networking.v1.PlayContext;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 
+/**
+ * Represents the context for {@link ClientNetworking#getPlayReceiver()}, in which a
+ * {@link net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket server to
+ * client custom payload packet} is received.
+ *
+ * @see ClientNetworking#getPlayReceiver()
+ */
 public interface ClientPlayContext extends PlayContext, ClientContext {
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>In the client play context, the player is always the client's own player.
+	 * It is the same as {@code MinecraftClient.getInstance().player}, but this
+	 * player is guaranteed to be non-null.</p>
+	 *
+	 * @return the client's own player
+	 */
 	@Override
 	ClientPlayerEntity getPlayer();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>In the client play context, the packet listener is always a {@link
+	 * ClientPlayNetworkHandler}, which exposes a few useful properties, including
+	 * the {@linkplain ClientPlayNetworkHandler#getWorld() client world}, the
+	 * {@linkplain ClientPlayNetworkHandler#getTagManager() tag manager}, the
+	 * {@linkplain ClientPlayNetworkHandler#getAdvancementHandler() advancement
+	 * manager}, etc.</p>
+	 */
 	@Override
 	ClientPlayNetworkHandler getListener();
 }
