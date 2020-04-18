@@ -15,7 +15,7 @@ jobs:
   - stage: deploy
     before_install: sudo apt-get install pandoc
     install: pandoc --from markdown --to html --standalone -o readme.html README.md
-    script: "./gradlew javadoc build bintrayUpload publishMavenGitHubPublicationToGitHubRepository -S -i"
+    script: "./gradlew javadoc build bintrayUpload -S -i"
     deploy:
       - provider: pages
         github_token: "$GITHUB_OAUTH_TOKEN"
