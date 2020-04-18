@@ -17,6 +17,6 @@ repositories {
 }
 
 dependencies {
-    modApi "io.github.fablabsmc:networking-api-v1-draft:<your desired version>"
+    modApi "io.github.fablabsmc.fablabs:networking-api-v1-draft:<your desired version>"
 }
 ```
