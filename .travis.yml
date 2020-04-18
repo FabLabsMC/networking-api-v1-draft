@@ -40,7 +40,7 @@ jobs:
 stages:
 - build
 - name: deploy
-  if: repo = liachmodded/networking-api-v1-draft AND env(bintray_key) AND env(GITHUB_OAUTH_TOKEN)
+  if: repo = FabLabsMC/networking-api-v1-draft AND env(bintray_key) AND env(GITHUB_OAUTH_TOKEN)
 env:
   global:
   - TERM=dumb
