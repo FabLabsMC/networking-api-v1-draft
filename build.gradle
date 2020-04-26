@@ -42,7 +42,7 @@ license {
     header = file('HEADER.txt')
     include '**/*.java'
     style.java = 'BLOCK_COMMENT'
-    newLine = false
+    newLine = true
 }
 
 // ensure that the encoding is set to UTF-8, no matter what the system default is
