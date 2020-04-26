@@ -33,6 +33,7 @@ import io.github.fablabsmc.fablabs.api.networking.v1.PlayPacketSender;
 import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
 import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientPlayContext;
 import io.github.fablabsmc.fablabs.impl.networking.AbstractChanneledNetworkAddon;
+import io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -94,6 +95,14 @@ public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 
 	@Override
 	public ClientPlayerEntity getPlayer() {
+		if (!getEngine().isOnThread()) {
+			if (NetworkingDetails.THROW_ON_OFF_THREAD_PLAYER_ACCESS) {
+				throw new IllegalStateException("Accessing the client player out of the client thread!");
+			}
+
+			NetworkingDetails.LOGGER.warn("Accessing the client player out of the client thread!");
+		}
+
 		return MinecraftClient.getInstance().player;
 	}
 
