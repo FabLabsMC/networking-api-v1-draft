@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking.client;
 
 import java.util.List;
@@ -43,7 +44,6 @@ import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.util.Identifier;
 
 public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<ClientPlayContext> implements ClientPlayContext {
-
 	private final ClientPlayNetworkHandler handler;
 
 	public ClientPlayNetworkAddon(ClientPlayNetworkHandler handler) {
@@ -60,6 +60,7 @@ public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 
 	public boolean handle(CustomPayloadS2CPacket packet) {
 		PacketByteBuf buf = packet.getData();
+
 		try {
 			return handle(packet.getChannel(), buf, this);
 		} finally {

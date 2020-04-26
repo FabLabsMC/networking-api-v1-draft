@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'com.jfrog.bintray' version '1.8.4'
     id 'net.minecrell.licenser' version '0.4.1'
+    id 'checkstyle'
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -30,6 +31,11 @@ dependencies {
     modCompile "net.fabricmc:fabric-loader:${project.loaderVersion}"
 
     modCompile "net.fabricmc.fabric-api:fabric-api-base:0.1.3+12a8474cad"
+}
+
+checkstyle {
+    configFile = rootProject.file("checkstyle.xml")
+    toolVersion = '8.31'
 }
 
 license {
@@ -245,6 +251,7 @@ publishing {
 }
 
 tasks.withType(Jar) {
+    from "LICENSE"
     dependsOn("generatePomFileForMavenJavaPublication", "generatePomPropertiesForJar")
     into("META-INF/maven/${project.group}/${project.name}") {
         from(generatePomFileForMavenJavaPublication) {

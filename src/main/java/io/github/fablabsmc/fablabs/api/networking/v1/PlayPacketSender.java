@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
 import java.util.Collection;
@@ -53,7 +54,7 @@ public interface PlayPacketSender extends PacketSender, ChannelAware {
 	 * {@linkplain #hasChannel(Identifier) registered}, a warning will be logged.</p>
 	 *
 	 * @param channel the id of the channel
-	 * @param buf the content of the packet
+	 * @param buf     the content of the packet
 	 */
 	@Override
 	void sendPacket(Identifier channel, PacketByteBuf buf);
@@ -65,8 +66,8 @@ public interface PlayPacketSender extends PacketSender, ChannelAware {
 	 * property is absent or set to {@code true} and the {@code channel} is not
 	 * {@linkplain #hasChannel(Identifier) registered}, a warning will be logged.</p>
 	 *
-	 * @param channel the id of the channel
-	 * @param buf the content of the packet
+	 * @param channel  the id of the channel
+	 * @param buf      the content of the packet
 	 * @param callback an optional callback to execute after the packet is sent, may be {@code null}
 	 */
 	@Override

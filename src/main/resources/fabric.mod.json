@@ -17,12 +17,12 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      "io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails::initialize",
-      "io.github.fablabsmc.fablabs.test.networking.NetworkingUser"
+      "io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails::init",
+      "io.github.fablabsmc.fablabs.impl.networking.test.NetworkingUser"
     ],
     "client": [
-      "io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails::clientInitialize",
-      "io.github.fablabsmc.fablabs.test.networking.NetworkingClientUser"
+      "io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails::clientInit",
+      "io.github.fablabsmc.fablabs.impl.networking.test.NetworkingClientUser"
     ]
   },
   "mixins": [

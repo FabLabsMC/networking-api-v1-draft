@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler;
@@ -50,6 +51,7 @@ public abstract class ReceivingNetworkAddon<C extends ListenerContext> {
 		}
 
 		PacketByteBuf buf = PacketByteBufs.slice(originalBuf);
+
 		try {
 			handler.receive(context, buf);
 		} catch (Throwable ex) {

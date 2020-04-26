@@ -24,21 +24,29 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
-package io.github.fablabsmc.fablabs.test.networking;
 
-import static io.github.fablabsmc.fablabs.test.networking.NetworkingUser.TEST_CHANNEL;
+package io.github.fablabsmc.fablabs.impl.networking.test.mixin;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
+import com.mojang.brigadier.CommandDispatcher;
+import io.github.fablabsmc.fablabs.impl.networking.test.NetworkingUser;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.fabricmc.api.ClientModInitializer;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
 
-public final class NetworkingClientUser implements ClientModInitializer {
+@Mixin(CommandManager.class)
+public abstract class CommandManagerMixin {
+	@Shadow
+	@Final
+	private CommandDispatcher<ServerCommandSource> dispatcher;
 
-	@Override
-	public void onInitializeClient() {
-		ClientNetworking.getPlayReceiver().register(TEST_CHANNEL, (context, buf) -> {
-			String message = buf.readString(32767);
-			context.getEngine().send(() -> context.getEngine().inGameHud.setOverlayMessage(message, true));
-		});
+	@Inject(method = "<init>", at = @At("RETURN"))
+	public void networkingTest$ctor(boolean dedicated, CallbackInfo ci) {
+		NetworkingUser.registerCommand(this.dispatcher);
 	}
 }

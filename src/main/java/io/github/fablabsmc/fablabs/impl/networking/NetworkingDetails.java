@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking;
 
 import java.util.ArrayList;
@@ -43,8 +44,10 @@ import org.apache.logging.log4j.Logger;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
-public final class NetworkingDetails {
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
+public final class NetworkingDetails {
 	public static final String MOD_ID = "networking-api-v1-draft";
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 	public static final Identifier REGISTER_CHANNEL = new Identifier("minecraft", "register");
@@ -65,14 +68,16 @@ public final class NetworkingDetails {
 		};
 	}
 
-	public static void initialize() {
+	public static void init() {
 		ServerNetworking.LOGIN_QUERY_START.register(handler -> {
 			PacketByteBuf buf = PacketByteBufs.create();
 			Collection<Identifier> channels = ServerNetworkingDetails.PLAY.getChannels();
 			buf.writeVarInt(channels.size());
+
 			for (Identifier id : channels) {
 				buf.writeIdentifier(id);
 			}
+
 			ServerNetworking.getLoginSender(handler).sendPacket(EARLY_REGISTRATION_CHANNEL, buf);
 			NetworkingDetails.LOGGER.debug("Sent accepted channels to the client");
 		});
@@ -83,6 +88,7 @@ public final class NetworkingDetails {
 
 			int n = buf.readVarInt();
 			List<Identifier> ids = new ArrayList<>(n);
+
 			for (int i = 0; i < n; i++) {
 				ids.add(buf.readIdentifier());
 			}
@@ -92,10 +98,12 @@ public final class NetworkingDetails {
 		});
 	}
 
-	public static void clientInitialize() {
+	@Environment(EnvType.CLIENT)
+	public static void clientInit() {
 		ClientNetworking.getLoginReceiver().register(EARLY_REGISTRATION_CHANNEL, (context, buf) -> {
 			int n = buf.readVarInt();
 			List<Identifier> ids = new ArrayList<>(n);
+
 			for (int i = 0; i < n; i++) {
 				ids.add(buf.readIdentifier());
 			}
@@ -106,6 +114,7 @@ public final class NetworkingDetails {
 			PacketByteBuf response = PacketByteBufs.create();
 			Collection<Identifier> channels = ClientNetworkingDetails.PLAY.getChannels();
 			response.writeVarInt(channels.size());
+
 			for (Identifier id : channels) {
 				response.writeIdentifier(id);
 			}

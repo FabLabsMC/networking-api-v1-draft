@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking.client;
 
 import java.util.concurrent.CompletableFuture;
@@ -43,7 +44,6 @@ import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.util.Identifier;
 
 public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<ClientLoginContext> {
-
 	private final ClientLoginNetworkHandler handler;
 
 	public ClientLoginNetworkAddon(ClientLoginNetworkHandler handler) {
@@ -63,7 +63,6 @@ public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<ClientL
 	}
 
 	final class Context implements ClientLoginContext, AutoCloseable {
-
 		private final int queryId;
 		private boolean responded;
 

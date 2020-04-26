@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "io.github.fablabsmc.fablabs.test.networking.mixin",
+  "package": "io.github.fablabsmc.fablabs.impl.networking.test.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "CommandManagerMixin"

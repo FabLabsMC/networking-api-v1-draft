@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking;
 
 import java.nio.charset.StandardCharsets;
@@ -47,7 +48,6 @@ import net.minecraft.util.InvalidIdentifierException;
 
 // play
 public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> extends AbstractNetworkAddon<C> implements PlayPacketSender {
-
 	protected final Set<Identifier> sendableChannels;
 	protected final Set<Identifier> sendableChannelsView;
 
@@ -61,6 +61,7 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 		this.sendableChannelsView = Collections.unmodifiableSet(sendableChannels);
 
 		Collection<Identifier> pending = ((ChannelInfoHolder) connection).getChannels();
+
 		if (!pending.isEmpty()) {
 			register(new ArrayList<>(pending));
 			pending.clear();
@@ -72,27 +73,31 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 		if (NetworkingDetails.REGISTER_CHANNEL.equals(channel)) {
 			receiveRegistration(true, PacketByteBufs.slice(originalBuf));
 		}
+
 		if (NetworkingDetails.UNREGISTER_CHANNEL.equals(channel)) {
 			receiveRegistration(false, PacketByteBufs.slice(originalBuf));
 		}
+
 		return super.handle(channel, originalBuf, context);
 	}
 
 	public void sendRegistration() {
 		Collection<Identifier> channels = this.receiver.getChannels();
+
 		if (channels.isEmpty()) {
 			return;
 		}
 
 		PacketByteBuf buf = PacketByteBufs.create();
-
 		boolean first = true;
+
 		for (Identifier channel : channels) {
 			if (first) {
 				first = false;
 			} else {
 				buf.writeByte(0);
 			}
+
 			buf.writeBytes(channel.toString().getBytes(StandardCharsets.US_ASCII));
 		}
 
@@ -102,10 +107,11 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 	// wrap in try with res (buf)
 	protected void receiveRegistration(boolean register, PacketByteBuf buf) {
 		List<Identifier> ids = new ArrayList<>();
-
 		StringBuilder active = new StringBuilder();
+
 		while (buf.isReadable()) {
 			byte b = buf.readByte();
+
 			if (b != 0) {
 				active.append(AsciiString.b2c(b));
 			} else {
@@ -138,6 +144,7 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 
 	private void addId(List<Identifier> ids, StringBuilder sb) {
 		String literal = sb.toString();
+
 		try {
 			ids.add(new Identifier(literal));
 		} catch (InvalidIdentifierException ex) {
@@ -161,6 +168,7 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 				NetworkingDetails.UNREGISTER_CHANNEL)) {
 			NetworkingDetails.LOGGER.warn("Packet sent to unregistered channel \"{}\" on {}!", channel, this.connection);
 		}
+
 		return makeUncheckedPacket(channel, buf);
 	}
 }

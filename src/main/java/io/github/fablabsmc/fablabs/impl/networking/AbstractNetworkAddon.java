@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.ListenerContext;
@@ -38,7 +39,6 @@ import net.minecraft.util.Identifier;
 
 // server login
 public abstract class AbstractNetworkAddon<C extends ListenerContext> extends ReceivingNetworkAddon<C> implements PacketSender {
-
 	protected final ClientConnection connection;
 
 	protected AbstractNetworkAddon(BasicPacketReceiver<C> receiver, ClientConnection connection) {

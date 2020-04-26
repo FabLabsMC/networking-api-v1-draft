@@ -24,13 +24,16 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1.client;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.ListenerContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.server.MinecraftServer;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 /**
  * Represents a context for {@linkplain PacketReceiver packet reception}
@@ -39,6 +42,7 @@ import net.minecraft.server.MinecraftServer;
  * <p>Compared to the basic listener context, the client context offers
  * access to the active {@linkplain MinecraftClient <i>Minecraft</i> Client}.</p>
  */
+@Environment(EnvType.CLIENT)
 public interface ClientContext extends ListenerContext {
 	/**
 	 * {@inheritDoc}

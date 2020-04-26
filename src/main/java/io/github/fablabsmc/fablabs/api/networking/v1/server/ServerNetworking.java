@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1.server;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketChannelCallback;
@@ -195,5 +196,4 @@ public final class ServerNetworking {
 	public static MinecraftServer getServer(ServerLoginNetworkHandler handler) {
 		return ((ServerLoginNetworkHandlerAccess) handler).getServer();
 	}
-
 }

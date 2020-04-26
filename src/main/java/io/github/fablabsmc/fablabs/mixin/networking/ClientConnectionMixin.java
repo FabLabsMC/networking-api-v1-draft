@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.mixin.networking;
 
 import java.util.Collection;
@@ -51,7 +52,6 @@ import net.minecraft.util.Identifier;
 
 @Mixin(ClientConnection.class)
 public abstract class ClientConnectionMixin implements ChannelInfoHolder {
-
 	@Shadow
 	private PacketListener packetListener;
 
@@ -71,6 +71,7 @@ public abstract class ClientConnectionMixin implements ChannelInfoHolder {
 	@Redirect(method = "exceptionCaught", remap = false, at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;send(Lnet/minecraft/network/Packet;Lio/netty/util/concurrent/GenericFutureListener;)V"))
 	private void networking$resendOnExceptionCaught(ClientConnection self, Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> listener) {
 		PacketListener handler = this.packetListener;
+
 		if (handler instanceof DisconnectPacketSource) {
 			this.send(((DisconnectPacketSource) handler).makeDisconnectPacket(new TranslatableText("disconnect.genericReason")), listener);
 		} else {

@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -33,28 +34,27 @@ import net.minecraft.network.PacketByteBuf;
 
 /**
  * Handles packets in a channel.
- * 
+ *
  * <p>This is supposed to be implemented by API users to accomplish packet handling
  * functionalities.</p>
- * 
+ *
  * @param <C> the listener context
  * @see PacketReceiver
  */
 @FunctionalInterface
 public interface ChannelHandler<C extends ListenerContext> {
-
 	/**
 	 * Receives a packet.
-	 * 
+	 *
 	 * <p>This method is executed on {@linkplain io.netty.channel.EventLoop netty's event loops}.
 	 * Modification to the {@linkplain ListenerContext#getEngine() game} should be
 	 * {@linkplain net.minecraft.util.thread.ThreadExecutor#submit(Runnable) scheduled}.</p>
-	 * 
+	 *
 	 * <p>The {@code buf} will be {@linkplain ReferenceCounted#release() released} on exiting this
 	 * method. To ensure access to the buf later, you should {@link ReferenceCounted#retain()
 	 * retain} the {@code buf}.</p>
-	 * 
-	 * <p>An example usage can be like below, assuming {@code C} is a 
+	 *
+	 * <p>An example usage can be like below, assuming {@code C} is a
 	 * {@linkplain io.github.fablabsmc.fablabs.api.networking.v1.client.ClientContext client context}:
 	 * <pre><blockquote>
 	 *     (context, buf) -&rt; {
@@ -64,30 +64,31 @@ public interface ChannelHandler<C extends ListenerContext> {
 	 *         });
 	 *     }
 	 * </blockquote></pre></p>
-	 * 
+	 *
 	 * <p>When this method throws an exception, it will be captured and logged. The exception
 	 * will be fed to {@link #rethrow(Throwable)}, which by default throws the exception to
-	 * the {@linkplain io.netty.channel.EventLoop event loop} and handled by {@link 
+	 * the {@linkplain io.netty.channel.EventLoop event loop} and handled by {@link
 	 * net.minecraft.network.ClientConnection#exceptionCaught(ChannelHandlerContext, Throwable)},
 	 * causing a disconnection.</p>
-	 * 
+	 *
 	 * @param context the context for the packet
-	 * @param buf the content of the packet
+	 * @param buf     the content of the packet
 	 */
 	void receive(C context, PacketByteBuf buf);
 
 	// todo do we need this rethrow functionality
 	// throw networking errors, may report custom message as well
 	// may throw OffThreadException.INSTANCE for example
+
 	/**
 	 * Handles a exception thrown by {@link #receive(ListenerContext, PacketByteBuf)}.
-	 * 
+	 *
 	 * <p>By default, this implementation will simply throw the captured exception.</p>
-	 * 
+	 *
 	 * <p>Throwables thrown by this method will be handled by {@link
 	 * net.minecraft.network.ClientConnection#exceptionCaught(ChannelHandlerContext, Throwable)}.</p>
-	 * 
-	 * @param ex the captured exception
+	 *
+	 * @param ex  the captured exception
 	 * @param <E> the throwable type variable, which allows throwing any throwable as unchecked
 	 * @throws E any exception as a result of exception handling.
 	 */

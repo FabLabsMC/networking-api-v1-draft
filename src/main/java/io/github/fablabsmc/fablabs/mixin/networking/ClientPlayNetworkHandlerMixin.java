@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.mixin.networking;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;

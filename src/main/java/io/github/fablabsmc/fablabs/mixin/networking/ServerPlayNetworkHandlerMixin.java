@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.mixin.networking;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
@@ -43,7 +44,6 @@ import net.minecraft.text.Text;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin implements ServerPlayNetworkHandlerHook, DisconnectPacketSource {
-
 	private ServerPlayNetworkAddon addon;
 
 	@Inject(method = "<init>", at = @At("RETURN"))

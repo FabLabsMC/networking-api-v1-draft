@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
 import java.util.List;
@@ -33,7 +34,7 @@ import net.minecraft.util.Identifier;
 
 /**
  * A callback that involves a network handler and a list of channels.
- * 
+ *
  * @param <L> the network handler
  * @see io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking#CHANNEL_REGISTERED
  * @see io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking#CHANNEL_UNREGISTERED
@@ -42,11 +43,10 @@ import net.minecraft.util.Identifier;
  */
 @FunctionalInterface
 public interface PacketChannelCallback<L extends PacketListener> {
-
 	/**
 	 * Receive the network handler and the channels.
 	 *
-	 * @param handler the network handler
+	 * @param handler  the network handler
 	 * @param channels the channels
 	 */
 	void handle(L handler, List<Identifier> channels);

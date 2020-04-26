@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking.server;
 
 import java.util.Collection;
@@ -55,7 +56,6 @@ import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.util.Identifier;
 
 public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLoginContext> {
-
 	private final ServerLoginNetworkHandler handler;
 	private final MinecraftServer server;
 	private final QueryIdFactory queryIdFactory;
@@ -97,6 +97,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLo
 					return oldEx;
 				});
 			} catch (InterruptedException | CancellationException ignored) {
+				// ignored
 			}
 
 			return true;
@@ -119,6 +120,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLo
 
 	private boolean handle(int queryId, PacketByteBuf originalBuf) {
 		Identifier channel = channels.remove(queryId);
+
 		if (channel == null) {
 			NetworkingDetails.LOGGER.warn("Query ID {} was received but no channel has been associated in {}!", queryId, this.connection);
 			return false;

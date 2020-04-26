@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1.client;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketChannelCallback;
@@ -37,6 +38,8 @@ import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.util.Identifier;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 
@@ -50,6 +53,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
  *
  * @see io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking
  */
+@Environment(EnvType.CLIENT)
 public final class ClientNetworking {
 	/**
 	 * An event for the initialization of the client play network handler.

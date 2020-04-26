@@ -24,12 +24,16 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1.client;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.PlayContext;
 
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 /**
  * Represents the context for {@link ClientNetworking#getPlayReceiver()}, in which a
@@ -38,8 +42,8 @@ import net.minecraft.client.network.ClientPlayerEntity;
  *
  * @see ClientNetworking#getPlayReceiver()
  */
+@Environment(EnvType.CLIENT)
 public interface ClientPlayContext extends PlayContext, ClientContext {
-
 	/**
 	 * {@inheritDoc}
 	 *

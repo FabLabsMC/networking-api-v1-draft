@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking.server;
 
 import java.util.List;
@@ -44,7 +45,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public final class ServerPlayNetworkAddon extends AbstractChanneledNetworkAddon<ServerPlayContext> implements ServerPlayContext {
-
 	private final ServerPlayNetworkHandler handler;
 
 	public ServerPlayNetworkAddon(ServerPlayNetworkHandler handler) {

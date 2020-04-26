@@ -24,29 +24,21 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
-package io.github.fablabsmc.fablabs.test.networking.mixin;
 
-import com.mojang.brigadier.CommandDispatcher;
-import io.github.fablabsmc.fablabs.test.networking.NetworkingUser;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+package io.github.fablabsmc.fablabs.impl.networking.test;
 
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
+import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
 
-@Mixin(CommandManager.class)
-public abstract class CommandManagerMixin {
+import net.minecraft.text.Text;
 
-	@Shadow
-	@Final
-	private CommandDispatcher<ServerCommandSource> dispatcher;
+import net.fabricmc.api.ClientModInitializer;
 
-	@Inject(method = "<init>", at = @At("RETURN"))
-	public void networkingTest$ctor(boolean dedicated, CallbackInfo ci) {
-		NetworkingUser.registerCommand(this.dispatcher);
+public final class NetworkingClientUser implements ClientModInitializer {
+	@Override
+	public void onInitializeClient() {
+		ClientNetworking.getPlayReceiver().register(NetworkingUser.TEST_CHANNEL, (context, buf) -> {
+			Text text = buf.readText();
+			context.getEngine().send(() -> context.getEngine().inGameHud.setOverlayMessage(text, true));
+		});
 	}
 }

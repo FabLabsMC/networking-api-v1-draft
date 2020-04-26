@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.mixin.networking;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
@@ -46,7 +47,6 @@ import net.minecraft.text.Text;
 
 @Mixin(ServerLoginNetworkHandler.class)
 public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetworkHandlerHook, DisconnectPacketSource {
-
 	private ServerLoginNetworkAddon addon;
 
 	@Shadow

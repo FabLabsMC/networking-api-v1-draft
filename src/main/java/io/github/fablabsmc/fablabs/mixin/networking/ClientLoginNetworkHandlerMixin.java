@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.mixin.networking;
 
 import io.github.fablabsmc.fablabs.impl.networking.client.ClientLoginNetworkAddon;
@@ -38,7 +39,6 @@ import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 
 @Mixin(ClientLoginNetworkHandler.class)
 public abstract class ClientLoginNetworkHandlerMixin implements ClientLoginNetworkHandlerHook {
-
 	private ClientLoginNetworkAddon addon;
 
 	@Inject(method = "<init>", at = @At("RETURN"))

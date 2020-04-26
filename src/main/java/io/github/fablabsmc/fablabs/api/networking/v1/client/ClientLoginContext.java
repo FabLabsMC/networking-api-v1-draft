@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1.client;
 
 import java.util.concurrent.CompletableFuture;
@@ -33,6 +34,9 @@ import io.netty.util.concurrent.GenericFutureListener;
 
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.network.PacketByteBuf;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 /**
  * Represents the context for {@link ClientNetworking#getLoginReceiver()}, in which a
@@ -49,6 +53,7 @@ import net.minecraft.network.PacketByteBuf;
  *
  * @see ClientNetworking#getLoginReceiver()
  */
+@Environment(EnvType.CLIENT)
 public interface ClientLoginContext extends ClientContext {
 	/**
 	 * {@inheritDoc}

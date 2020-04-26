@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
 import net.minecraft.network.listener.PacketListener;
@@ -31,23 +32,23 @@ import net.minecraft.util.thread.ThreadExecutor;
 
 /**
  * Represents a context for {@linkplain PacketReceiver packet reception} in a channel.
- * 
+ *
  * @see PacketReceiver
  */
 public interface ListenerContext {
 	/**
 	 * Returns the packet listener that received this packet.
-	 * 
+	 *
 	 * <p>The packet listener offers access to the {@linkplain PacketListener#getConnection()
 	 * connection}.</p>
-	 * 
+	 *
 	 * @return the packet listener
 	 */
 	PacketListener getListener();
 
 	/**
 	 * Returns the game engine associated with the packet listener.
-	 * 
+	 *
 	 * <p>The game engine exposes access to synchronization of execution to main
 	 * thread, such as {@link ThreadExecutor#submit(Runnable)}, allowing you to
 	 * apply changes to the game without danger of concurrent modification.</p>

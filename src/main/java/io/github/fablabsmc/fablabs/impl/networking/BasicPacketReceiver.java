@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.impl.networking;
 
 import java.util.Collection;
@@ -42,7 +43,6 @@ import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
 import net.minecraft.util.Identifier;
 
 public final class BasicPacketReceiver<C extends ListenerContext> implements PacketReceiver<C> {
-
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private final Map<Identifier, ChannelHandler<? super C>> handlers;
 
@@ -57,6 +57,7 @@ public final class BasicPacketReceiver<C extends ListenerContext> implements Pac
 	public ChannelHandler<? super C> get(Identifier channel) {
 		Lock lock = this.lock.readLock();
 		lock.lock();
+
 		try {
 			return this.handlers.get(channel);
 		} finally {
@@ -69,6 +70,7 @@ public final class BasicPacketReceiver<C extends ListenerContext> implements Pac
 		Objects.requireNonNull(handler, "handler");
 		Lock lock = this.lock.writeLock();
 		lock.lock();
+
 		try {
 			return this.handlers.putIfAbsent(channel, handler) == null;
 		} finally {
@@ -80,18 +82,19 @@ public final class BasicPacketReceiver<C extends ListenerContext> implements Pac
 	public ChannelHandler<? super C> unregister(Identifier channel) {
 		Lock lock = this.lock.writeLock();
 		lock.lock();
+
 		try {
 			return this.handlers.remove(channel);
 		} finally {
 			lock.unlock();
 		}
-
 	}
 
 	@Override
 	public Collection<Identifier> getChannels() {
 		Lock lock = this.lock.readLock();
 		lock.lock();
+
 		try {
 			return new HashSet<>(this.handlers.keySet());
 		} finally {
@@ -103,6 +106,7 @@ public final class BasicPacketReceiver<C extends ListenerContext> implements Pac
 	public boolean hasChannel(Identifier channel) {
 		Lock lock = this.lock.readLock();
 		lock.lock();
+
 		try {
 			return this.handlers.containsKey(channel);
 		} finally {

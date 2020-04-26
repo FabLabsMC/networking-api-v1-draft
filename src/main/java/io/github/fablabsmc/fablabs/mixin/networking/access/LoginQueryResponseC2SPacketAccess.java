@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.mixin.networking.access;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,7 +35,6 @@ import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
 
 @Mixin(LoginQueryResponseC2SPacket.class)
 public interface LoginQueryResponseC2SPacketAccess {
-
 	@Accessor
 	int getQueryId();
 

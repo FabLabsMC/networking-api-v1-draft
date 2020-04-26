@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1.server;
 
 import java.util.concurrent.Future;
@@ -44,7 +45,6 @@ import net.minecraft.server.network.ServerLoginNetworkHandler;
  * @see ServerNetworking#getLoginReceiver()
  */
 public interface ServerLoginContext extends ServerContext {
-
 	/**
 	 * {@inheritDoc}
 	 *

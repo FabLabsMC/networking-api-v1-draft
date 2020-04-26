@@ -24,7 +24,8 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
-package io.github.fablabsmc.fablabs.test.networking;
+
+package io.github.fablabsmc.fablabs.impl.networking.test;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
@@ -39,12 +40,12 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 
 import net.fabricmc.api.ModInitializer;
 
 public final class NetworkingUser implements ModInitializer {
-
 	public static final String ID = "networking-api-v1-draft";
 	public static final Identifier TEST_CHANNEL = id("test_channel");
 	private static final Logger LOGGER = LogManager.getLogger(ID);
@@ -55,7 +56,7 @@ public final class NetworkingUser implements ModInitializer {
 
 	public static void sendToTestChannel(ServerPlayerEntity player, String stuff) {
 		PacketByteBuf buf = PacketByteBufs.create();
-		buf.writeString(stuff, 32767);
+		buf.writeText(new LiteralText(stuff));
 		ServerNetworking.getPlaySender(player).sendPacket(TEST_CHANNEL, buf);
 		NetworkingDetails.LOGGER.info("Sent custom payload packet in {}", TEST_CHANNEL);
 	}

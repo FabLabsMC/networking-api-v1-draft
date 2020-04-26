@@ -24,6 +24,7 @@
  *
  * For more information, please refer to <http://unlicense.org>
  */
+
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
 import java.util.Collection;
@@ -32,14 +33,13 @@ import net.minecraft.util.Identifier;
 
 /**
  * Associates packets to individual packet reception handlers by channel.
- * 
+ *
  * @param <C> the receiver's context beyond channel
  */
 public interface PacketReceiver<C extends ListenerContext> extends ChannelAware {
-
 	/**
 	 * Registers a handler to a channel.
-	 * 
+	 *
 	 * <p>If a handler is already registered to the {@code channel}, this method
 	 * will return {@code false}, and no change will be made. Use {@link
 	 * #unregister(Identifier)} to unregister the existing handler.</p>
@@ -52,7 +52,7 @@ public interface PacketReceiver<C extends ListenerContext> extends ChannelAware 
 
 	/**
 	 * Removes the handler of a channel.
-	 * 
+	 *
 	 * <p>The {@code channel} is guaranteed not to have a handler after this call.</p>
 	 *
 	 * @param channel the id of the channel
