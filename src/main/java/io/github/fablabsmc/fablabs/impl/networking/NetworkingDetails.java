@@ -55,8 +55,8 @@ public final class NetworkingDetails {
 	public static final Identifier EARLY_REGISTRATION_CHANNEL = new Identifier(MOD_ID, "early_registration");
 	public static final boolean WARN_UNREGISTERED_PACKETS = Boolean
 			.parseBoolean(System.getProperty(MOD_ID + ".warnUnregisteredPackets", "true"));
-	public static final boolean THROW_ON_OFF_THREAD_PLAYER_ACCESS = Boolean
-			.parseBoolean(System.getProperty(MOD_ID + ".throwOnOffThreadPlayerAccess", "true"));
+	public static final OffThreadGameAccessPolicy OFF_THREAD_GAME_ACCESS_POLICY = OffThreadGameAccessPolicy
+			.parse(System.getProperty(MOD_ID + ".offThreadGameAccess"), OffThreadGameAccessPolicy.THROW);
 
 	public static QueryIdFactory createQueryIdManager() {
 		// todo incremental ids or randomized

@@ -53,9 +53,10 @@ public interface PlayContext extends ListenerContext {
 	 * <p>For security concerns, this method should be called on game engine threads
 	 * in order to prevent inadvertent asynchronous modifications to the game.</p>
 	 *
-	 * <p>{@code networking-api-v1-draft.throwOnOffThreadPlayerAccess} system property
-	 * can be set to value other than {@code true} to emit an error message than throwing
-	 * an exception.</p>
+	 * <p>{@code networking-api-v1-draft.offThreadGameAccess} system property
+	 * can be set to {@code PERMIT} for disabling checks, {@code WARN} for emitting an
+	 * error message, and {@code THROW} to throw an exception. The values are case
+	 * insensitive.</p>
 	 *
 	 * @return the player associated with the current packet
 	 * @throws IllegalArgumentException if this method is called outside of

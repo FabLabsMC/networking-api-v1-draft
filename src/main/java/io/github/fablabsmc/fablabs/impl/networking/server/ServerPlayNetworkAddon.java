@@ -89,14 +89,7 @@ public final class ServerPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 
 	@Override
 	public ServerPlayerEntity getPlayer() {
-		if (!getEngine().isOnThread()) {
-			if (NetworkingDetails.THROW_ON_OFF_THREAD_PLAYER_ACCESS) {
-				throw new IllegalStateException("Accessing a server player out of the server thread!");
-			}
-
-			NetworkingDetails.LOGGER.warn("Accessing a server player out of the server thread!");
-		}
-
+		NetworkingDetails.OFF_THREAD_GAME_ACCESS_POLICY.check(this, "a server player");
 		return this.handler.player;
 	}
 

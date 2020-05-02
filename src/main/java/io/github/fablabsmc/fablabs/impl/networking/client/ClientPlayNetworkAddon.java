@@ -95,14 +95,7 @@ public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 
 	@Override
 	public ClientPlayerEntity getPlayer() {
-		if (!getEngine().isOnThread()) {
-			if (NetworkingDetails.THROW_ON_OFF_THREAD_PLAYER_ACCESS) {
-				throw new IllegalStateException("Accessing the client player out of the client thread!");
-			}
-
-			NetworkingDetails.LOGGER.warn("Accessing the client player out of the client thread!");
-		}
-
+		NetworkingDetails.OFF_THREAD_GAME_ACCESS_POLICY.check(this, "the client player");
 		return MinecraftClient.getInstance().player;
 	}
 
