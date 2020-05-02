@@ -66,10 +66,10 @@ public interface ClientLoginContext extends ClientContext {
 
 	// packet qualities
 
-	/**
+	/* (Non-Javadoc)
 	 * Returns the integer ID of the query request.
 	 */
-	int getQueryId();
+	//int getQueryId(); Expose again when needed
 
 	// utilities
 	// if none of these "respond" is called, an unknown packet will be sent

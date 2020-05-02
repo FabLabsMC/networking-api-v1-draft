@@ -58,7 +58,7 @@ public interface PacketReceiver<C extends ListenerContext> extends ChannelAware 
 	 * @param channel the id of the channel
 	 * @return the previous handler, or {@code null} if no handler was bound to the channel
 	 */
-	ChannelHandler<? super C> unregister(Identifier channel);
+	/* Nullable */ ChannelHandler<? super C> unregister(Identifier channel);
 
 	/**
 	 * Returns the collection of all channels that have handlers in this receiver.

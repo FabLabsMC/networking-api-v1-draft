@@ -83,7 +83,7 @@ public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<ClientL
 			return ClientLoginNetworkAddon.this.handler;
 		}
 
-		@Override
+		//@Override Not exposed for now
 		public int getQueryId() {
 			return this.queryId;
 		}

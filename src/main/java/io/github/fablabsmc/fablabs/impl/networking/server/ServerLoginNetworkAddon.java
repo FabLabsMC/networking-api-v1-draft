@@ -161,7 +161,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLo
 			return ServerLoginNetworkAddon.this;
 		}
 
-		@Override
+		//@Override Not exposed for now
 		public int getQueryId() {
 			return this.queryId;
 		}

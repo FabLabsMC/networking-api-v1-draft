@@ -68,10 +68,10 @@ public interface ServerLoginContext extends ServerContext {
 
 	// packet info
 
-	/**
+	/* (Non-Javadoc)
 	 * Returns the integer ID of the query response.
 	 */
-	int getQueryId();
+	//int getQueryId(); Expose again when needed
 
 	/**
 	 * Returns whether the original query request with the same query ID as this response was understood.
