@@ -32,7 +32,7 @@ import java.util.Collection;
 import net.minecraft.util.Identifier;
 
 /**
- * Represents an object that is keeps track of a collection of channels.
+ * Represents an object that keeps track of a collection of channels.
  */
 public interface ChannelAware {
 	/**
