@@ -51,7 +51,7 @@ public interface PlayContext extends ListenerContext {
 	 * Returns a player associated with the current packet.
 	 *
 	 * <p>For security concerns, this method should be called on game engine threads
-	 * in order to prevent inadvertent asynchroous modifications to the game.</p>
+	 * in order to prevent inadvertent asynchronous modifications to the game.</p>
 	 *
 	 * <p>{@code networking-api-v1-draft.throwOnOffThreadPlayerAccess} system property
 	 * can be set to value other than {@code true} to emit an error message than throwing
