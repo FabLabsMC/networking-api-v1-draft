@@ -56,7 +56,7 @@ public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 
 	public void onServerReady() {
 		sendRegistration();
-		ClientNetworking.PLAY_INITIALIZED.invoker().handle(this.handler);
+		ClientNetworking.PLAY_INITIALIZED.invoker().handle(this);
 	}
 
 	public boolean handle(CustomPayloadS2CPacket packet) {
@@ -83,12 +83,12 @@ public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 
 	@Override
 	protected void postRegisterEvent(List<Identifier> ids) {
-		ClientNetworking.CHANNEL_REGISTERED.invoker().handle(handler, ids);
+		ClientNetworking.CHANNEL_REGISTERED.invoker().handle(this, ids);
 	}
 
 	@Override
 	protected void postUnregisterEvent(List<Identifier> ids) {
-		ClientNetworking.CHANNEL_UNREGISTERED.invoker().handle(handler, ids);
+		ClientNetworking.CHANNEL_UNREGISTERED.invoker().handle(this, ids);
 	}
 
 	// context stuff

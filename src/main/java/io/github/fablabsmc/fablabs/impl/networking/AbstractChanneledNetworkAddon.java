@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler;
 import io.github.fablabsmc.fablabs.api.networking.v1.PlayContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.PlayPacketSender;
 import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
@@ -47,16 +48,18 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 
 // play
-public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> extends AbstractNetworkAddon<C> implements PlayPacketSender {
+public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> extends AbstractNetworkAddon implements PlayPacketSender {
+	protected final BasicPacketReceiver<ChannelHandler<C>> receiver;
 	protected final Set<Identifier> sendableChannels;
 	protected final Set<Identifier> sendableChannelsView;
 
-	protected AbstractChanneledNetworkAddon(BasicPacketReceiver<C> receiver, ClientConnection connection) {
+	protected AbstractChanneledNetworkAddon(BasicPacketReceiver<ChannelHandler<C>> receiver, ClientConnection connection) {
 		this(receiver, connection, new HashSet<>());
 	}
 
-	protected AbstractChanneledNetworkAddon(BasicPacketReceiver<C> receiver, ClientConnection connection, Set<Identifier> sendableChannels) {
-		super(receiver, connection);
+	protected AbstractChanneledNetworkAddon(BasicPacketReceiver<ChannelHandler<C>> receiver, ClientConnection connection, Set<Identifier> sendableChannels) {
+		super(connection);
+		this.receiver = receiver;
 		this.sendableChannels = sendableChannels;
 		this.sendableChannelsView = Collections.unmodifiableSet(sendableChannels);
 
@@ -68,7 +71,7 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 		}
 	}
 
-	@Override
+	// always supposed to handle async!
 	protected boolean handle(Identifier channel, PacketByteBuf originalBuf, C context) {
 		if (NetworkingDetails.REGISTER_CHANNEL.equals(channel)) {
 			receiveRegistration(true, PacketByteBufs.slice(originalBuf));
@@ -78,7 +81,22 @@ public abstract class AbstractChanneledNetworkAddon<C extends PlayContext> exten
 			receiveRegistration(false, PacketByteBufs.slice(originalBuf));
 		}
 
-		return super.handle(channel, originalBuf, context);
+		ChannelHandler<? super C> handler = this.receiver.get(channel);
+
+		if (handler == null) {
+			return false;
+		}
+
+		PacketByteBuf buf = PacketByteBufs.slice(originalBuf);
+
+		try {
+			handler.receive(context, buf);
+		} catch (Throwable ex) {
+			NetworkingDetails.LOGGER.error("Encountered exception while handling in channel \"{}\"", channel, ex);
+			throw ex;
+		}
+
+		return true;
 	}
 
 	public void sendRegistration() {

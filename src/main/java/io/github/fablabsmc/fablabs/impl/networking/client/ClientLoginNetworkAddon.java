@@ -29,25 +29,25 @@ package io.github.fablabsmc.fablabs.impl.networking.client;
 
 import java.util.concurrent.CompletableFuture;
 
+import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientLoginChannelHandler;
 import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientLoginContext;
-import io.github.fablabsmc.fablabs.impl.networking.ReceivingNetworkAddon;
+import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
+import io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails;
 import io.github.fablabsmc.fablabs.mixin.networking.access.LoginQueryRequestS2CPacketAccess;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
-import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.util.Identifier;
 
-public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<ClientLoginContext> {
+public final class ClientLoginNetworkAddon implements ClientLoginContext {
 	private final ClientLoginNetworkHandler handler;
 
 	public ClientLoginNetworkAddon(ClientLoginNetworkHandler handler) {
-		super(ClientNetworkingDetails.LOGIN);
 		this.handler = handler;
 	}
 
@@ -57,74 +57,35 @@ public final class ClientLoginNetworkAddon extends ReceivingNetworkAddon<ClientL
 	}
 
 	private boolean handlePacket(int queryId, Identifier channel, PacketByteBuf originalBuf) {
-		try (Context context = new Context(queryId)) {
-			return handle(channel, originalBuf, context);
+		ClientLoginChannelHandler handler = ClientNetworkingDetails.LOGIN.get(channel);
+
+		if (handler == null) {
+			return false;
 		}
+
+		PacketByteBuf buf = PacketByteBufs.slice(originalBuf);
+
+		try {
+			CompletableFuture<ClientLoginChannelHandler.Response> future = handler.receive(this, buf);
+			future.thenAccept(result -> {
+				LoginQueryResponseC2SPacket packet = new LoginQueryResponseC2SPacket(queryId, result.getBuf());
+				this.handler.getConnection().send(packet, (GenericFutureListener<? extends Future<? super Void>>) result.getListener());
+			});
+		} catch (Throwable ex) {
+			NetworkingDetails.LOGGER.error("Encountered exception while handling in channel \"{}\"", channel, ex);
+			throw ex;
+		}
+
+		return true;
 	}
 
-	final class Context implements ClientLoginContext, AutoCloseable {
-		private final int queryId;
-		private boolean responded;
+	@Override
+	public ClientLoginNetworkHandler getListener() {
+		return this.handler;
+	}
 
-		Context(int queryId) {
-			this.queryId = queryId;
-			this.responded = false;
-		}
-
-		@Override
-		public void close() {
-			if (!responded && handler.getConnection().isOpen()) {
-				respond((PacketByteBuf) null);
-			}
-		}
-
-		@Override
-		public ClientLoginNetworkHandler getListener() {
-			return ClientLoginNetworkAddon.this.handler;
-		}
-
-		//@Override Not exposed for now
-		public int getQueryId() {
-			return this.queryId;
-		}
-
-		@Override
-		public void respond(PacketByteBuf buf) {
-			respond(buf, null);
-		}
-
-		@Override
-		public void respond(CompletableFuture<? extends PacketByteBuf> future) {
-			respond(future, null);
-		}
-
-		@Override
-		public void respond(PacketByteBuf buf, GenericFutureListener<? extends Future<? super Void>> callback) {
-			handler.getConnection().send(buildPacket(buf), callback);
-			this.responded = true;
-		}
-
-		@Override
-		public void respond(CompletableFuture<? extends PacketByteBuf> future, GenericFutureListener<? extends Future<? super Void>> callback) {
-			ClientConnection connection = handler.getConnection();
-			future.whenCompleteAsync((buf, ex) -> {
-				if (!connection.isOpen()) {
-					return;
-				}
-
-				// if an exception occurs, just... respond a "not understood" packet
-				connection.send(buildPacket(buf), callback);
-			});
-			this.responded = true;
-		}
-
-		@Override
-		public MinecraftClient getEngine() {
-			return MinecraftClient.getInstance(); // may need update in the future?
-		}
-
-		private LoginQueryResponseC2SPacket buildPacket(/* Nullable */ PacketByteBuf buf) {
-			return new LoginQueryResponseC2SPacket(this.queryId, buf);
-		}
+	@Override
+	public MinecraftClient getEngine() {
+		return MinecraftClient.getInstance();
 	}
 }

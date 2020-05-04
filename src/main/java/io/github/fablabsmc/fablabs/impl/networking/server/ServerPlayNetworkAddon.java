@@ -54,7 +54,7 @@ public final class ServerPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 	}
 
 	public void onClientReady() {
-		ServerNetworking.PLAY_INITIALIZED.invoker().handle(handler);
+		ServerNetworking.PLAY_INITIALIZED.invoker().handle(this);
 		sendRegistration();
 	}
 
@@ -77,12 +77,12 @@ public final class ServerPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 
 	@Override
 	protected void postRegisterEvent(List<Identifier> ids) {
-		ServerNetworking.CHANNEL_REGISTERED.invoker().handle(handler, ids);
+		ServerNetworking.CHANNEL_REGISTERED.invoker().handle(this, ids);
 	}
 
 	@Override
 	protected void postUnregisterEvent(List<Identifier> ids) {
-		ServerNetworking.CHANNEL_UNREGISTERED.invoker().handle(handler, ids);
+		ServerNetworking.CHANNEL_UNREGISTERED.invoker().handle(this, ids);
 	}
 
 	// context

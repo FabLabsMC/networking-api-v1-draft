@@ -27,7 +27,6 @@
 
 package io.github.fablabsmc.fablabs.impl.networking;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.ListenerContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketSender;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
@@ -38,11 +37,10 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
 // server login
-public abstract class AbstractNetworkAddon<C extends ListenerContext> extends ReceivingNetworkAddon<C> implements PacketSender {
+public abstract class AbstractNetworkAddon implements PacketSender {
 	protected final ClientConnection connection;
 
-	protected AbstractNetworkAddon(BasicPacketReceiver<C> receiver, ClientConnection connection) {
-		super(receiver);
+	protected AbstractNetworkAddon(ClientConnection connection) {
 		this.connection = connection;
 	}
 

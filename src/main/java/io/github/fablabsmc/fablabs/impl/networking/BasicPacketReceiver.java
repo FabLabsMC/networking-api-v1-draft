@@ -36,25 +36,23 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler;
-import io.github.fablabsmc.fablabs.api.networking.v1.ListenerContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
 
 import net.minecraft.util.Identifier;
 
-public final class BasicPacketReceiver<C extends ListenerContext> implements PacketReceiver<C> {
+public final class BasicPacketReceiver<H> implements PacketReceiver<H> {
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
-	private final Map<Identifier, ChannelHandler<? super C>> handlers;
+	private final Map<Identifier, H> handlers;
 
 	public BasicPacketReceiver() {
 		this(new HashMap<>()); // sync map should be fine as there is little read write competitions
 	}
 
-	public BasicPacketReceiver(Map<Identifier, ChannelHandler<? super C>> map) {
+	public BasicPacketReceiver(Map<Identifier, H> map) {
 		this.handlers = map;
 	}
 
-	public ChannelHandler<? super C> get(Identifier channel) {
+	public H get(Identifier channel) {
 		Lock lock = this.lock.readLock();
 		lock.lock();
 
@@ -66,7 +64,7 @@ public final class BasicPacketReceiver<C extends ListenerContext> implements Pac
 	}
 
 	@Override
-	public boolean register(Identifier channel, ChannelHandler<? super C> handler) {
+	public boolean register(Identifier channel, H handler) {
 		Objects.requireNonNull(handler, "handler");
 		Lock lock = this.lock.writeLock();
 		lock.lock();
@@ -79,7 +77,7 @@ public final class BasicPacketReceiver<C extends ListenerContext> implements Pac
 	}
 
 	@Override
-	public ChannelHandler<? super C> unregister(Identifier channel) {
+	public H unregister(Identifier channel) {
 		Lock lock = this.lock.writeLock();
 		lock.lock();
 

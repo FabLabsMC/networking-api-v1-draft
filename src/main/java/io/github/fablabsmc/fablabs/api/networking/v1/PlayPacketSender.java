@@ -45,7 +45,7 @@ import net.minecraft.util.Identifier;
  * declare its ability to receive packets in a channel a packet was sent in, a
  * warning is logged.</p>
  */
-public interface PlayPacketSender extends PacketSender, ChannelAware {
+public interface PlayPacketSender extends PacketSender, ChannelRegistry {
 	/**
 	 * {@inheritDoc}
 	 *

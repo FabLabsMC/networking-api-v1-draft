@@ -30,8 +30,10 @@ package io.github.fablabsmc.fablabs.impl.networking;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientLoginChannelHandler;
 import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
 import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
 import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
@@ -52,7 +54,7 @@ public final class NetworkingDetails {
 	public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 	public static final Identifier REGISTER_CHANNEL = new Identifier("minecraft", "register");
 	public static final Identifier UNREGISTER_CHANNEL = new Identifier("minecraft", "unregister");
-	public static final Identifier EARLY_REGISTRATION_CHANNEL = new Identifier(MOD_ID, "early_registration");
+	public static final Identifier EARLY_REGISTRATION_CHANNEL = new Identifier(MOD_ID, "early_registration.v1");
 	public static final boolean WARN_UNREGISTERED_PACKETS = Boolean
 			.parseBoolean(System.getProperty(MOD_ID + ".warnUnregisteredPackets", "true"));
 	public static final OffThreadGameAccessPolicy OFF_THREAD_GAME_ACCESS_POLICY = OffThreadGameAccessPolicy
@@ -71,7 +73,7 @@ public final class NetworkingDetails {
 	}
 
 	public static void init() {
-		ServerNetworking.LOGIN_QUERY_START.register(handler -> {
+		ServerNetworking.LOGIN_QUERY_START.register(context -> {
 			PacketByteBuf buf = PacketByteBufs.create();
 			Collection<Identifier> channels = ServerNetworkingDetails.PLAY.getChannels();
 			buf.writeVarInt(channels.size());
@@ -80,11 +82,11 @@ public final class NetworkingDetails {
 				buf.writeIdentifier(id);
 			}
 
-			ServerNetworking.getLoginSender(handler).sendPacket(EARLY_REGISTRATION_CHANNEL, buf);
+			context.getPacketSender().sendPacket(EARLY_REGISTRATION_CHANNEL, buf);
 			NetworkingDetails.LOGGER.debug("Sent accepted channels to the client");
 		});
-		ServerNetworking.getLoginReceiver().register(EARLY_REGISTRATION_CHANNEL, (context, buf) -> {
-			if (!context.isUnderstood()) {
+		ServerNetworking.getLoginReceiver().register(EARLY_REGISTRATION_CHANNEL, (context, buf, understood) -> {
+			if (!understood) {
 				return;
 			}
 
@@ -121,8 +123,8 @@ public final class NetworkingDetails {
 				response.writeIdentifier(id);
 			}
 
-			context.respond(response);
 			NetworkingDetails.LOGGER.debug("Sent accepted channels to the server");
+			return CompletableFuture.completedFuture(new ClientLoginChannelHandler.Response(response));
 		});
 	}
 }

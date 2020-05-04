@@ -34,9 +34,9 @@ import net.minecraft.util.Identifier;
 /**
  * Associates packets to individual packet reception handlers by channel.
  *
- * @param <C> the receiver's context beyond channel
+ * @param <H> the channel handler type
  */
-public interface PacketReceiver<C extends ListenerContext> extends ChannelAware {
+public interface PacketReceiver<H> extends ChannelRegistry {
 	/**
 	 * Registers a handler to a channel.
 	 *
@@ -48,7 +48,7 @@ public interface PacketReceiver<C extends ListenerContext> extends ChannelAware 
 	 * @param handler the handler
 	 * @return whether the handler is registered
 	 */
-	boolean register(Identifier channel, ChannelHandler<? super C> handler);
+	boolean register(Identifier channel, H handler);
 
 	/**
 	 * Removes the handler of a channel.
@@ -58,7 +58,7 @@ public interface PacketReceiver<C extends ListenerContext> extends ChannelAware 
 	 * @param channel the id of the channel
 	 * @return the previous handler, or {@code null} if no handler was bound to the channel
 	 */
-	/* Nullable */ ChannelHandler<? super C> unregister(Identifier channel);
+	/* Nullable */ H unregister(Identifier channel);
 
 	/**
 	 * Returns the collection of all channels that have handlers in this receiver.

@@ -66,28 +66,6 @@ public interface ServerLoginContext extends ServerContext {
 	 */
 	PacketSender getPacketSender();
 
-	// packet info
-
-	/* (Non-Javadoc)
-	 * Returns the integer ID of the query response.
-	 */
-	//int getQueryId(); Expose again when needed
-
-	/**
-	 * Returns whether the original query request with the same query ID as this response was understood.
-	 *
-	 * <p>If the query response is not understood, an {@link io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs#empty()
-	 * empty packet byte buf} will be passed as the {@code buf} for
-	 * {@link io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler#receive(io.github.fablabsmc.fablabs.api.networking.v1.ListenerContext, net.minecraft.network.PacketByteBuf)}.</p>
-	 *
-	 * <p>Since it is never guaranteed that a client can always understand
-	 * query requests, this method should <strong>always</strong> be checked in packet
-	 * reception.</p>
-	 *
-	 * @return whether the query request was understood
-	 */
-	boolean isUnderstood();
-
 	// utility
 
 	/**

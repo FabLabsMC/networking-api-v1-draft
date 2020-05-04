@@ -37,6 +37,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketSender;
+import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerLoginChannelHandler;
 import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerLoginContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
 import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
@@ -55,7 +56,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.util.Identifier;
 
-public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLoginContext> {
+public final class ServerLoginNetworkAddon extends AbstractNetworkAddon implements ServerLoginContext {
 	private final ServerLoginNetworkHandler handler;
 	private final MinecraftServer server;
 	private final QueryIdFactory queryIdFactory;
@@ -64,7 +65,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLo
 	private boolean firstQueryTick = true;
 
 	public ServerLoginNetworkAddon(ServerLoginNetworkHandler handler) {
-		super(ServerNetworkingDetails.LOGIN, handler.connection);
+		super(handler.connection);
 		this.handler = handler;
 		this.server = ((ServerLoginNetworkHandlerAccess) handler).getServer();
 		this.queryIdFactory = NetworkingDetails.createQueryIdManager();
@@ -74,7 +75,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLo
 	public boolean queryTick() {
 		if (this.firstQueryTick) {
 			this.sendCompressionPacket();
-			ServerNetworking.LOGIN_QUERY_START.invoker().handle(this.handler);
+			ServerNetworking.LOGIN_QUERY_START.invoker().handle(this);
 			this.firstQueryTick = false;
 		}
 
@@ -127,7 +128,22 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLo
 		}
 
 		boolean understood = originalBuf != null;
-		return this.handle(channel, understood ? originalBuf : PacketByteBufs.empty(), new Context(queryId, understood));
+		ServerLoginChannelHandler handler = ServerNetworkingDetails.LOGIN.get(channel);
+
+		if (handler == null) {
+			return false;
+		}
+
+		PacketByteBuf buf = understood ? PacketByteBufs.slice(originalBuf) : PacketByteBufs.empty();
+
+		try {
+			handler.receive(this, buf, understood);
+		} catch (Throwable ex) {
+			NetworkingDetails.LOGGER.error("Encountered exception while handling in channel \"{}\"", channel, ex);
+			throw ex;
+		}
+
+		return true;
 	}
 
 	@Override
@@ -142,43 +158,23 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon<ServerLo
 		return ret;
 	}
 
-	final class Context implements ServerLoginContext {
-		private final int queryId;
-		private final boolean understood;
+	@Override
+	public ServerLoginNetworkHandler getListener() {
+		return this.handler;
+	}
 
-		Context(int queryId, boolean understood) {
-			this.queryId = queryId;
-			this.understood = understood;
-		}
+	@Override
+	public PacketSender getPacketSender() {
+		return this;
+	}
 
-		@Override
-		public ServerLoginNetworkHandler getListener() {
-			return ServerLoginNetworkAddon.this.handler;
-		}
+	@Override
+	public void waitFor(Future<?> future) {
+		this.waits.add(future);
+	}
 
-		@Override
-		public PacketSender getPacketSender() {
-			return ServerLoginNetworkAddon.this;
-		}
-
-		//@Override Not exposed for now
-		public int getQueryId() {
-			return this.queryId;
-		}
-
-		@Override
-		public boolean isUnderstood() {
-			return this.understood;
-		}
-
-		@Override
-		public void waitFor(Future<?> future) {
-			ServerLoginNetworkAddon.this.waits.add(future);
-		}
-
-		@Override
-		public MinecraftServer getEngine() {
-			return ServerLoginNetworkAddon.this.server;
-		}
+	@Override
+	public MinecraftServer getEngine() {
+		return this.server;
 	}
 }

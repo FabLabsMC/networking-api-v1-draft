@@ -27,15 +27,16 @@
 
 package io.github.fablabsmc.fablabs.impl.networking.server;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerLoginContext;
+import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler;
+import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerLoginChannelHandler;
 import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerPlayContext;
 import io.github.fablabsmc.fablabs.impl.networking.BasicPacketReceiver;
 
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 
 public final class ServerNetworkingDetails {
-	public static final BasicPacketReceiver<ServerLoginContext> LOGIN = new BasicPacketReceiver<>();
-	public static final BasicPacketReceiver<ServerPlayContext> PLAY = new BasicPacketReceiver<>();
+	public static final BasicPacketReceiver<ServerLoginChannelHandler> LOGIN = new BasicPacketReceiver<>();
+	public static final BasicPacketReceiver<ChannelHandler<ServerPlayContext>> PLAY = new BasicPacketReceiver<>();
 
 	public static ServerPlayNetworkAddon getAddon(ServerPlayNetworkHandler handler) {
 		return ((ServerPlayNetworkHandlerHook) handler).getAddon();

@@ -27,6 +27,7 @@
 
 package io.github.fablabsmc.fablabs.api.networking.v1.client;
 
+import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketChannelCallback;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketListenerCallback;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
@@ -62,10 +63,10 @@ public final class ClientNetworking {
 	 * {@link #getPlaySender(ClientPlayNetworkHandler)} to obtain the packet sender in
 	 * the callback.</p>
 	 */
-	public static final Event<PacketListenerCallback<ClientPlayNetworkHandler>> PLAY_INITIALIZED = EventFactory
-			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
-				for (PacketListenerCallback<ClientPlayNetworkHandler> callback : callbacks) {
-					callback.handle(handler);
+	public static final Event<PacketListenerCallback<ClientPlayContext>> PLAY_INITIALIZED = EventFactory
+			.createArrayBacked(PacketListenerCallback.class, callbacks -> context -> {
+				for (PacketListenerCallback<ClientPlayContext> callback : callbacks) {
+					callback.handle(context);
 				}
 			});
 	/**
@@ -73,10 +74,10 @@ public final class ClientNetworking {
 	 *
 	 * <p>No packets should be sent when this event is invoked.</p>
 	 */
-	public static final Event<PacketListenerCallback<ClientPlayNetworkHandler>> PLAY_DISCONNECTED = EventFactory
-			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
-				for (PacketListenerCallback<ClientPlayNetworkHandler> callback : callbacks) {
-					callback.handle(handler);
+	public static final Event<PacketListenerCallback<ClientPlayContext>> PLAY_DISCONNECTED = EventFactory
+			.createArrayBacked(PacketListenerCallback.class, callbacks -> context -> {
+				for (PacketListenerCallback<ClientPlayContext> callback : callbacks) {
+					callback.handle(context);
 				}
 			});
 	/**
@@ -85,10 +86,10 @@ public final class ClientNetworking {
 	 *
 	 * @see PlayPacketSender#hasChannel(Identifier)
 	 */
-	public static final Event<PacketChannelCallback<ClientPlayNetworkHandler>> CHANNEL_REGISTERED = EventFactory
-			.createArrayBacked(PacketChannelCallback.class, callbacks -> (handler, channels) -> {
-				for (PacketChannelCallback<ClientPlayNetworkHandler> callback : callbacks) {
-					callback.handle(handler, channels);
+	public static final Event<PacketChannelCallback<ClientPlayContext>> CHANNEL_REGISTERED = EventFactory
+			.createArrayBacked(PacketChannelCallback.class, callbacks -> (context, channels) -> {
+				for (PacketChannelCallback<ClientPlayContext> callback : callbacks) {
+					callback.handle(context, channels);
 				}
 			});
 	/**
@@ -97,10 +98,10 @@ public final class ClientNetworking {
 	 *
 	 * @see PlayPacketSender#hasChannel(Identifier)
 	 */
-	public static final Event<PacketChannelCallback<ClientPlayNetworkHandler>> CHANNEL_UNREGISTERED = EventFactory
-			.createArrayBacked(PacketChannelCallback.class, callbacks -> (handler, channels) -> {
-				for (PacketChannelCallback<ClientPlayNetworkHandler> callback : callbacks) {
-					callback.handle(handler, channels);
+	public static final Event<PacketChannelCallback<ClientPlayContext>> CHANNEL_UNREGISTERED = EventFactory
+			.createArrayBacked(PacketChannelCallback.class, callbacks -> (context, channels) -> {
+				for (PacketChannelCallback<ClientPlayContext> callback : callbacks) {
+					callback.handle(context, channels);
 				}
 			});
 
@@ -139,7 +140,7 @@ public final class ClientNetworking {
 	 * handlers, receiving {@link net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket
 	 * server to client custom payload packets}.
 	 */
-	public static PacketReceiver<ClientPlayContext> getPlayReceiver() {
+	public static PacketReceiver<ChannelHandler<ClientPlayContext>> getPlayReceiver() {
 		return ClientNetworkingDetails.PLAY;
 	}
 
@@ -148,7 +149,7 @@ public final class ClientNetworking {
 	 * handlers, receiving {@link net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket
 	 * login query request packets}.
 	 */
-	public static PacketReceiver<ClientLoginContext> getLoginReceiver() {
+	public static PacketReceiver<ClientLoginChannelHandler> getLoginReceiver() {
 		return ClientNetworkingDetails.LOGIN;
 	}
 }

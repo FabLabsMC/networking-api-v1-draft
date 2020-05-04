@@ -34,7 +34,7 @@ import net.minecraft.util.Identifier;
 /**
  * Represents an object that keeps track of a collection of channels.
  */
-public interface ChannelAware {
+public interface ChannelRegistry {
 	/**
 	 * Returns a collection of channels this object is tracking.
 	 *

@@ -63,7 +63,7 @@ public abstract class ClientPlayNetworkHandlerMixin implements ClientPlayNetwork
 
 	@Inject(method = "onDisconnected", at = @At("HEAD"))
 	private void networking$onDisconnected(Text reason, CallbackInfo ci) {
-		ClientNetworking.PLAY_DISCONNECTED.invoker().handle((ClientPlayNetworkHandler) (Object) this);
+		ClientNetworking.PLAY_DISCONNECTED.invoker().handle(this.addon);
 	}
 
 	@Override

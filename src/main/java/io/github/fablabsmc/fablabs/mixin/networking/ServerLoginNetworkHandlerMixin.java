@@ -78,7 +78,7 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
 
 	@Inject(method = "onDisconnected", at = @At("HEAD"))
 	private void networking$onDisconnected(Text reason, CallbackInfo ci) {
-		ServerNetworking.LOGIN_DISCONNECTED.invoker().handle((ServerLoginNetworkHandler) (Object) this);
+		ServerNetworking.LOGIN_DISCONNECTED.invoker().handle(this.addon);
 	}
 
 	@Override

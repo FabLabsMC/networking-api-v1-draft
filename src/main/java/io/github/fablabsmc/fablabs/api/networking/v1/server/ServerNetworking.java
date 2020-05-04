@@ -27,6 +27,7 @@
 
 package io.github.fablabsmc.fablabs.api.networking.v1.server;
 
+import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketChannelCallback;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketListenerCallback;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
@@ -63,10 +64,10 @@ public final class ServerNetworking {
 	 *
 	 * @see PlayPacketSender#hasChannel(Identifier)
 	 */
-	public static final Event<PacketChannelCallback<ServerPlayNetworkHandler>> CHANNEL_REGISTERED = EventFactory
-			.createArrayBacked(PacketChannelCallback.class, callbacks -> (handler, channels) -> {
-				for (PacketChannelCallback<ServerPlayNetworkHandler> callback : callbacks) {
-					callback.handle(handler, channels);
+	public static final Event<PacketChannelCallback<ServerPlayContext>> CHANNEL_REGISTERED = EventFactory
+			.createArrayBacked(PacketChannelCallback.class, callbacks -> (context, channels) -> {
+				for (PacketChannelCallback<ServerPlayContext> callback : callbacks) {
+					callback.handle(context, channels);
 				}
 			});
 	/**
@@ -75,10 +76,10 @@ public final class ServerNetworking {
 	 *
 	 * @see PlayPacketSender#hasChannel(Identifier)
 	 */
-	public static final Event<PacketChannelCallback<ServerPlayNetworkHandler>> CHANNEL_UNREGISTERED = EventFactory
-			.createArrayBacked(PacketChannelCallback.class, callbacks -> (handler, channels) -> {
-				for (PacketChannelCallback<ServerPlayNetworkHandler> callback : callbacks) {
-					callback.handle(handler, channels);
+	public static final Event<PacketChannelCallback<ServerPlayContext>> CHANNEL_UNREGISTERED = EventFactory
+			.createArrayBacked(PacketChannelCallback.class, callbacks -> (context, channels) -> {
+				for (PacketChannelCallback<ServerPlayContext> callback : callbacks) {
+					callback.handle(context, channels);
 				}
 			});
 	/**
@@ -88,10 +89,10 @@ public final class ServerNetworking {
 	 * {@link #getPlaySender(ServerPlayNetworkHandler)} to obtain the packet sender in the
 	 * callback.</p>
 	 */
-	public static final Event<PacketListenerCallback<ServerPlayNetworkHandler>> PLAY_INITIALIZED = EventFactory
-			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
-				for (PacketListenerCallback<ServerPlayNetworkHandler> callback : callbacks) {
-					callback.handle(handler);
+	public static final Event<PacketListenerCallback<ServerPlayContext>> PLAY_INITIALIZED = EventFactory
+			.createArrayBacked(PacketListenerCallback.class, callbacks -> context -> {
+				for (PacketListenerCallback<ServerPlayContext> callback : callbacks) {
+					callback.handle(context);
 				}
 			});
 	/**
@@ -99,10 +100,10 @@ public final class ServerNetworking {
 	 *
 	 * <p>No packets should be sent when this event is invoked.</p>
 	 */
-	public static final Event<PacketListenerCallback<ServerPlayNetworkHandler>> PLAY_DISCONNECTED = EventFactory
-			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
-				for (PacketListenerCallback<ServerPlayNetworkHandler> callback : callbacks) {
-					callback.handle(handler);
+	public static final Event<PacketListenerCallback<ServerPlayContext>> PLAY_DISCONNECTED = EventFactory
+			.createArrayBacked(PacketListenerCallback.class, callbacks -> context -> {
+				for (PacketListenerCallback<ServerPlayContext> callback : callbacks) {
+					callback.handle(context);
 				}
 			});
 	/**
@@ -111,10 +112,10 @@ public final class ServerNetworking {
 	 * <p>Use {@link #getLoginSender(ServerLoginNetworkHandler)} to obtain the query request
 	 * packet sender in the callback.</p>
 	 */
-	public static final Event<PacketListenerCallback<ServerLoginNetworkHandler>> LOGIN_QUERY_START = EventFactory
-			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
-				for (PacketListenerCallback<ServerLoginNetworkHandler> callback : callbacks) {
-					callback.handle(handler);
+	public static final Event<PacketListenerCallback<ServerLoginContext>> LOGIN_QUERY_START = EventFactory
+			.createArrayBacked(PacketListenerCallback.class, callbacks -> context -> {
+				for (PacketListenerCallback<ServerLoginContext> callback : callbacks) {
+					callback.handle(context);
 				}
 			});
 	/**
@@ -122,10 +123,10 @@ public final class ServerNetworking {
 	 *
 	 * <p>No packets should be sent when this event is invoked.</p>
 	 */
-	public static final Event<PacketListenerCallback<ServerLoginNetworkHandler>> LOGIN_DISCONNECTED = EventFactory
-			.createArrayBacked(PacketListenerCallback.class, callbacks -> handler -> {
-				for (PacketListenerCallback<ServerLoginNetworkHandler> callback : callbacks) {
-					callback.handle(handler);
+	public static final Event<PacketListenerCallback<ServerLoginContext>> LOGIN_DISCONNECTED = EventFactory
+			.createArrayBacked(PacketListenerCallback.class, callbacks -> context -> {
+				for (PacketListenerCallback<ServerLoginContext> callback : callbacks) {
+					callback.handle(context);
 				}
 			});
 
@@ -134,7 +135,7 @@ public final class ServerNetworking {
 	 * handlers, receiving {@link net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket
 	 * client to server custom payload packets}.
 	 */
-	public static PacketReceiver<ServerPlayContext> getPlayReceiver() {
+	public static PacketReceiver<ChannelHandler<ServerPlayContext>> getPlayReceiver() {
 		return ServerNetworkingDetails.PLAY;
 	}
 
@@ -143,7 +144,7 @@ public final class ServerNetworking {
 	 * handlers, receiving {@link net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket
 	 * login query response packets}.
 	 */
-	public static PacketReceiver<ServerLoginContext> getLoginReceiver() {
+	public static PacketReceiver<ServerLoginChannelHandler> getLoginReceiver() {
 		return ServerNetworkingDetails.LOGIN;
 	}
 
