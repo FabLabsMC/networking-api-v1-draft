@@ -27,13 +27,7 @@
 
 package io.github.fablabsmc.fablabs.api.networking.v1.client;
 
-import java.util.concurrent.CompletableFuture;
-
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-
 import net.minecraft.client.network.ClientLoginNetworkHandler;
-import net.minecraft.network.PacketByteBuf;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

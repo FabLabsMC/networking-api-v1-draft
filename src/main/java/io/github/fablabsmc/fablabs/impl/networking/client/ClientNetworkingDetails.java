@@ -29,7 +29,6 @@ package io.github.fablabsmc.fablabs.impl.networking.client;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler;
 import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientLoginChannelHandler;
-import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientLoginContext;
 import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientPlayContext;
 import io.github.fablabsmc.fablabs.impl.networking.BasicPacketReceiver;
 

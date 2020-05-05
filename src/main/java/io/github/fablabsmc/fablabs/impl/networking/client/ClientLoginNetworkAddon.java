@@ -27,10 +27,13 @@
 
 package io.github.fablabsmc.fablabs.impl.networking.client;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientLoginChannelHandler;
 import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientLoginContext;
+import io.github.fablabsmc.fablabs.api.networking.v1.util.FutureListeners;
 import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
 import io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails;
 import io.github.fablabsmc.fablabs.mixin.networking.access.LoginQueryRequestS2CPacketAccess;
@@ -64,12 +67,19 @@ public final class ClientLoginNetworkAddon implements ClientLoginContext {
 		}
 
 		PacketByteBuf buf = PacketByteBufs.slice(originalBuf);
+		List<GenericFutureListener<? extends Future<? super Void>>> futureListeners = new ArrayList<>();
 
 		try {
-			CompletableFuture<ClientLoginChannelHandler.Response> future = handler.receive(this, buf);
+			CompletableFuture<PacketByteBuf> future = handler.receive(this, buf, futureListeners::add);
 			future.thenAccept(result -> {
-				LoginQueryResponseC2SPacket packet = new LoginQueryResponseC2SPacket(queryId, result.getBuf());
-				this.handler.getConnection().send(packet, (GenericFutureListener<? extends Future<? super Void>>) result.getListener());
+				LoginQueryResponseC2SPacket packet = new LoginQueryResponseC2SPacket(queryId, result);
+				GenericFutureListener<? extends Future<? super Void>> listener = null;
+
+				for (GenericFutureListener<? extends Future<? super Void>> each : futureListeners) {
+					listener = FutureListeners.union(listener, each);
+				}
+
+				this.handler.getConnection().send(packet, listener);
 			});
 		} catch (Throwable ex) {
 			NetworkingDetails.LOGGER.error("Encountered exception while handling in channel \"{}\"", channel, ex);

@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientLoginChannelHandler;
 import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
 import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
 import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
@@ -104,7 +103,7 @@ public final class NetworkingDetails {
 
 	@Environment(EnvType.CLIENT)
 	public static void clientInit() {
-		ClientNetworking.getLoginReceiver().register(EARLY_REGISTRATION_CHANNEL, (context, buf) -> {
+		ClientNetworking.getLoginReceiver().register(EARLY_REGISTRATION_CHANNEL, (context, buf, listenerAdder) -> {
 			int n = buf.readVarInt();
 			List<Identifier> ids = new ArrayList<>(n);
 
@@ -124,7 +123,7 @@ public final class NetworkingDetails {
 			}
 
 			NetworkingDetails.LOGGER.debug("Sent accepted channels to the server");
-			return CompletableFuture.completedFuture(new ClientLoginChannelHandler.Response(response));
+			return CompletableFuture.completedFuture(response);
 		});
 	}
 }
