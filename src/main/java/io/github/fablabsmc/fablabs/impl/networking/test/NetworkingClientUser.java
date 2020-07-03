@@ -27,7 +27,10 @@
 
 package io.github.fablabsmc.fablabs.impl.networking.test;
 
+import java.util.concurrent.CompletableFuture;
+
 import io.github.fablabsmc.fablabs.api.networking.v1.ClientNetworking;
+import io.github.fablabsmc.fablabs.api.networking.v1.PacketByteBufs;
 
 import net.minecraft.text.Text;
 
@@ -40,5 +43,10 @@ public final class NetworkingClientUser implements ClientModInitializer {
 			Text text = buf.readText();
 			client.send(() -> client.inGameHud.setOverlayMessage(text, true));
 		});
+
+		// a dummy response
+		ClientNetworking.getLoginReceiver().register(NetworkingUser.TEST_CHANNEL, (handler, client, buf, listenerAdder) ->
+				CompletableFuture.completedFuture(PacketByteBufs.empty())
+		);
 	}
 }

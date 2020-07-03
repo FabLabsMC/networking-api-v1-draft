@@ -27,21 +27,27 @@
 
 package io.github.fablabsmc.fablabs.impl.networking.test;
 
+import java.util.concurrent.FutureTask;
+
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import io.github.fablabsmc.fablabs.api.networking.v1.PacketByteBufs;
+import io.github.fablabsmc.fablabs.api.networking.v1.PacketSender;
 import io.github.fablabsmc.fablabs.api.networking.v1.ServerNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 
 import net.fabricmc.api.ModInitializer;
 
@@ -78,5 +84,25 @@ public final class NetworkingUser implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Hello from networking user!");
+		ServerNetworking.LOGIN_QUERY_START.register(this::onLoginStart);
+		// login delaying example
+		ServerNetworking.getLoginReceiver().register(TEST_CHANNEL, (handler, server, sender, buf, understood, synchronizer) -> {
+			if (understood) {
+				FutureTask<?> future = new FutureTask<>(() -> {
+					for (int i = 0; i <= 10; i++) {
+						Thread.sleep(300);
+						LOGGER.info("Delayed login for number {} 300 milisecond", i);
+					}
+
+					return null;
+				});
+				Util.getServerWorkerExecutor().execute(future);
+				synchronizer.waitFor(future);
+			}
+		});
+	}
+
+	private void onLoginStart(ServerLoginNetworkHandler handler, MinecraftServer server, PacketSender sender, ServerNetworking.LoginSynchronizer synchronizer) {
+		sender.sendPacket(TEST_CHANNEL, PacketByteBufs.empty()); // dummy packet
 	}
 }

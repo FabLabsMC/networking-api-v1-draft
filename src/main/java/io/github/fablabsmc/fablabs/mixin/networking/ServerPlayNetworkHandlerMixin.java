@@ -29,7 +29,6 @@ package io.github.fablabsmc.fablabs.mixin.networking;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.ServerNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.DisconnectPacketSource;
-import io.github.fablabsmc.fablabs.impl.networking.PacketChecker;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerPlayNetworkAddon;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerPlayNetworkHandlerHook;
 import org.spongepowered.asm.mixin.Final;
@@ -42,15 +41,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 @Mixin(ServerPlayNetworkHandler.class)
-public abstract class ServerPlayNetworkHandlerMixin implements ServerPlayNetworkHandlerHook, DisconnectPacketSource, PacketChecker {
+public abstract class ServerPlayNetworkHandlerMixin implements ServerPlayNetworkHandlerHook, DisconnectPacketSource {
 	@Shadow
 	@Final
 	private MinecraftServer server;
@@ -74,19 +71,6 @@ public abstract class ServerPlayNetworkHandlerMixin implements ServerPlayNetwork
 	@Inject(method = "onDisconnected", at = @At("HEAD"))
 	private void networking$onDisconnected(Text reason, CallbackInfo ci) {
 		ServerNetworking.PLAY_DISCONNECTED.invoker().onPlayDisconnected((ServerPlayNetworkHandler) (Object) this, this.server);
-	}
-
-	@Override
-	public void checkPacket(Packet<?> packet) {
-		if (!(packet instanceof CustomPayloadS2CPacket)) {
-			return;
-		}
-
-		Identifier channel = ((CustomPayloadS2CPacket) packet).getChannel();
-
-		if (!this.addon.hasChannel(channel)) {
-			warn(channel, this.connection);
-		}
 	}
 
 	@Override

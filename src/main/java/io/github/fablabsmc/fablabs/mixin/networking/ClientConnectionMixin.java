@@ -33,8 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import io.github.fablabsmc.fablabs.impl.networking.ChannelInfoHolder;
 import io.github.fablabsmc.fablabs.impl.networking.DisconnectPacketSource;
-import io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails;
-import io.github.fablabsmc.fablabs.impl.networking.PacketChecker;
+import io.github.fablabsmc.fablabs.impl.networking.PacketCallback;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.spongepowered.asm.mixin.Mixin;
@@ -85,8 +84,8 @@ public abstract class ClientConnectionMixin implements ChannelInfoHolder {
 
 	@Inject(method = "sendImmediately", at = @At(value = "FIELD", target = "Lnet/minecraft/network/ClientConnection;packetsSentCounter:I"))
 	private void networking$checkPacket(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> callback, CallbackInfo ci) {
-		if (NetworkingDetails.CHECK_PACKETS && this.packetListener instanceof PacketChecker) {
-			((PacketChecker) this.packetListener).checkPacket(packet);
+		if (this.packetListener instanceof PacketCallback) {
+			((PacketCallback) this.packetListener).sent(packet);
 		}
 	}
 

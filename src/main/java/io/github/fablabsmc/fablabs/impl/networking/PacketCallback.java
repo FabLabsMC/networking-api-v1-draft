@@ -27,14 +27,8 @@
 
 package io.github.fablabsmc.fablabs.impl.networking;
 
-import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
-import net.minecraft.util.Identifier;
 
-public interface PacketChecker {
-	void checkPacket(Packet<?> packet);
-
-	default void warn(Identifier channel, ClientConnection connection) {
-		NetworkingDetails.LOGGER.warn("Packet sent to unregistered channel \"{}\" on {}!", channel, connection);
-	}
+public interface PacketCallback {
+	void sent(Packet<?> packet);
 }

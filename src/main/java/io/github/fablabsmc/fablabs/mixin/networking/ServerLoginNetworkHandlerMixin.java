@@ -29,7 +29,7 @@ package io.github.fablabsmc.fablabs.mixin.networking;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.ServerNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.DisconnectPacketSource;
-import io.github.fablabsmc.fablabs.impl.networking.PacketChecker;
+import io.github.fablabsmc.fablabs.impl.networking.PacketCallback;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerLoginNetworkAddon;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerLoginNetworkHandlerHook;
 import org.spongepowered.asm.mixin.Final;
@@ -49,7 +49,7 @@ import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.text.Text;
 
 @Mixin(ServerLoginNetworkHandler.class)
-public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetworkHandlerHook, DisconnectPacketSource, PacketChecker {
+public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetworkHandlerHook, DisconnectPacketSource, PacketCallback {
 	private ServerLoginNetworkAddon addon;
 
 	@Shadow
@@ -89,7 +89,7 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
 	}
 
 	@Override
-	public void checkPacket(Packet<?> packet) {
+	public void sent(Packet<?> packet) {
 		if (packet instanceof LoginQueryRequestS2CPacket) {
 			this.addon.registerOutgoingPacket((LoginQueryRequestS2CPacket) packet);
 		}
