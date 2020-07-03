@@ -53,7 +53,9 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
 	@Shadow
 	public abstract void acceptPlayer();
 
-	@Shadow @Final private MinecraftServer server;
+	@Shadow
+	@Final
+	private MinecraftServer server;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void networking$ctor(CallbackInfo ci) {
