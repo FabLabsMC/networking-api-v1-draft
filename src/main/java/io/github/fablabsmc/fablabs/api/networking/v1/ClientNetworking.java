@@ -170,7 +170,7 @@ public final class ClientNetworking {
 	 * handlers, receiving {@link net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket
 	 * server to client custom payload packets}.
 	 */
-	public static PacketReceiver<PlayChannelHandler> getPlayReceiver() {
+	public static ChannelHandlerRegistry<PlayChannelHandler> getPlayReceiver() {
 		return ClientNetworkingDetails.PLAY;
 	}
 
@@ -185,7 +185,7 @@ public final class ClientNetworking {
 	 * handlers, receiving {@link net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket
 	 * login query request packets}.
 	 */
-	public static PacketReceiver<LoginChannelHandler> getLoginReceiver() {
+	public static ChannelHandlerRegistry<LoginChannelHandler> getLoginReceiver() {
 		return ClientNetworkingDetails.LOGIN;
 	}
 
@@ -193,5 +193,9 @@ public final class ClientNetworking {
 	@FunctionalInterface
 	public interface LoginChannelHandler {
 		CompletableFuture<PacketByteBuf> receive(ClientLoginNetworkHandler handler, MinecraftClient client, PacketByteBuf buf, Consumer<GenericFutureListener<? extends Future<? super Void>>> listenerAdder);
+	}
+
+	public static void send(Identifier channel, PacketByteBuf buf) {
+		getPlaySender().sendPacket(channel, buf);
 	}
 }

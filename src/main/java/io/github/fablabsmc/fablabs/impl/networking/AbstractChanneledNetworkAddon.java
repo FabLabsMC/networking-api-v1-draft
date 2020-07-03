@@ -47,15 +47,15 @@ import net.minecraft.util.InvalidIdentifierException;
 
 // play
 public abstract class AbstractChanneledNetworkAddon<H> extends AbstractNetworkAddon implements PlayPacketSender {
-	protected final BasicPacketReceiver<H> receiver;
+	protected final BasicChannelHandlerRegistry<H> receiver;
 	protected final Set<Identifier> sendableChannels;
 	protected final Set<Identifier> sendableChannelsView;
 
-	protected AbstractChanneledNetworkAddon(BasicPacketReceiver<H> receiver, ClientConnection connection) {
+	protected AbstractChanneledNetworkAddon(BasicChannelHandlerRegistry<H> receiver, ClientConnection connection) {
 		this(receiver, connection, new HashSet<>());
 	}
 
-	protected AbstractChanneledNetworkAddon(BasicPacketReceiver<H> receiver, ClientConnection connection, Set<Identifier> sendableChannels) {
+	protected AbstractChanneledNetworkAddon(BasicChannelHandlerRegistry<H> receiver, ClientConnection connection, Set<Identifier> sendableChannels) {
 		super(connection);
 		this.receiver = receiver;
 		this.sendableChannels = sendableChannels;

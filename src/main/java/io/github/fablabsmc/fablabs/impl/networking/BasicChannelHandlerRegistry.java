@@ -36,19 +36,19 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
+import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandlerRegistry;
 
 import net.minecraft.util.Identifier;
 
-public final class BasicPacketReceiver<H> implements PacketReceiver<H> {
+public final class BasicChannelHandlerRegistry<H> implements ChannelHandlerRegistry<H> {
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private final Map<Identifier, H> handlers;
 
-	public BasicPacketReceiver() {
+	public BasicChannelHandlerRegistry() {
 		this(new HashMap<>()); // sync map should be fine as there is little read write competitions
 	}
 
-	public BasicPacketReceiver(Map<Identifier, H> map) {
+	public BasicChannelHandlerRegistry(Map<Identifier, H> map) {
 		this.handlers = map;
 	}
 

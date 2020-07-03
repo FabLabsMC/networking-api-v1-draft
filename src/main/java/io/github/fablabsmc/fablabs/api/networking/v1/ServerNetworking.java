@@ -168,7 +168,7 @@ public final class ServerNetworking {
 	 * handlers, receiving {@link net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket
 	 * client to server custom payload packets}.
 	 */
-	public static PacketReceiver<PlayChannelHandler> getPlayReceiver() {
+	public static ChannelHandlerRegistry<PlayChannelHandler> getPlayReceiver() {
 		return ServerNetworkingDetails.PLAY;
 	}
 
@@ -182,7 +182,7 @@ public final class ServerNetworking {
 	 * handlers, receiving {@link net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket
 	 * login query response packets}.
 	 */
-	public static PacketReceiver<LoginChannelHandler> getLoginReceiver() {
+	public static ChannelHandlerRegistry<LoginChannelHandler> getLoginReceiver() {
 		return ServerNetworkingDetails.LOGIN;
 	}
 
@@ -280,5 +280,9 @@ public final class ServerNetworking {
 		 * @param future the future that must be done before the player can log in
 		 */
 		void waitFor(Future<?> future);
+	}
+
+	public static void send(ServerPlayerEntity player, Identifier channel, PacketByteBuf buf) {
+		getPlaySender(player).sendPacket(channel, buf);
 	}
 }

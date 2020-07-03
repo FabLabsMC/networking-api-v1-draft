@@ -27,12 +27,6 @@
 
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
-import java.util.Collection;
-
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.GenericFutureListener;
-
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
 /**
@@ -46,51 +40,4 @@ import net.minecraft.util.Identifier;
  * warning is logged.</p>
  */
 public interface PlayPacketSender extends PacketSender, ChannelRegistry {
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>When the {@code networking-api-v1-draft.warnUnregisteredPackets} system
-	 * property is absent or set to {@code true} and the {@code channel} is not
-	 * {@linkplain #hasChannel(Identifier) registered}, a warning will be logged.</p>
-	 *
-	 * @param channel the id of the channel
-	 * @param buf     the content of the packet
-	 */
-	@Override
-	void sendPacket(Identifier channel, PacketByteBuf buf);
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>When the {@code networking-api-v1-draft.warnUnregisteredPackets} system
-	 * property is absent or set to {@code true} and the {@code channel} is not
-	 * {@linkplain #hasChannel(Identifier) registered}, a warning will be logged.</p>
-	 *
-	 * @param channel  the id of the channel
-	 * @param buf      the content of the packet
-	 * @param callback an optional callback to execute after the packet is sent, may be {@code null}
-	 */
-	@Override
-	void sendPacket(Identifier channel, PacketByteBuf buf, /* Nullable */ GenericFutureListener<? extends Future<? super Void>> callback);
-
-	/**
-	 * Returns the ids of all channels the recipient side of this sender has declared
-	 * ability to receive.
-	 *
-	 * <p>This collection does not contain duplicate channels.</p>
-	 *
-	 * @return a collection of channels
-	 */
-	@Override
-	Collection<Identifier> getChannels();
-
-	/**
-	 * Returns if the recipient side of this sender has declared its ability to receive
-	 * in a certain channel.
-	 *
-	 * @param channel the id of the channel to check
-	 * @return whether the recipient declares it can receive in that channel
-	 */
-	@Override
-	boolean hasChannel(Identifier channel);
 }

@@ -28,13 +28,13 @@
 package io.github.fablabsmc.fablabs.impl.networking.server;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.ServerNetworking;
-import io.github.fablabsmc.fablabs.impl.networking.BasicPacketReceiver;
+import io.github.fablabsmc.fablabs.impl.networking.BasicChannelHandlerRegistry;
 
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 
 public final class ServerNetworkingDetails {
-	public static final BasicPacketReceiver<ServerNetworking.LoginChannelHandler> LOGIN = new BasicPacketReceiver<>();
-	public static final BasicPacketReceiver<ServerNetworking.PlayChannelHandler> PLAY = new BasicPacketReceiver<>();
+	public static final BasicChannelHandlerRegistry<ServerNetworking.LoginChannelHandler> LOGIN = new BasicChannelHandlerRegistry<>();
+	public static final BasicChannelHandlerRegistry<ServerNetworking.PlayChannelHandler> PLAY = new BasicChannelHandlerRegistry<>();
 
 	public static ServerPlayNetworkAddon getAddon(ServerPlayNetworkHandler handler) {
 		return ((ServerPlayNetworkHandlerHook) handler).getAddon();

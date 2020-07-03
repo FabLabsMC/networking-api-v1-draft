@@ -27,8 +27,6 @@
 
 package io.github.fablabsmc.fablabs.api.networking.v1;
 
-import java.util.Collection;
-
 import net.minecraft.util.Identifier;
 
 /**
@@ -36,7 +34,7 @@ import net.minecraft.util.Identifier;
  *
  * @param <H> the channel handler type
  */
-public interface PacketReceiver<H> extends ChannelRegistry {
+public interface ChannelHandlerRegistry<H> extends ChannelRegistry {
 	/**
 	 * Registers a handler to a channel.
 	 *
@@ -59,23 +57,4 @@ public interface PacketReceiver<H> extends ChannelRegistry {
 	 * @return the previous handler, or {@code null} if no handler was bound to the channel
 	 */
 	/* Nullable */ H unregister(Identifier channel);
-
-	/**
-	 * Returns the collection of all channels that have handlers in this receiver.
-	 *
-	 * <p>This collection does not contain duplicate channels.</p>
-	 *
-	 * @return a collection of channels
-	 */
-	@Override
-	Collection<Identifier> getChannels();
-
-	/**
-	 * Returns whether a channel has a handler in this receiver.
-	 *
-	 * @param channel the id of the channel to check
-	 * @return whether the channel has a handler
-	 */
-	@Override
-	boolean hasChannel(Identifier channel);
 }

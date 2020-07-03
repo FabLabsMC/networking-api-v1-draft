@@ -32,11 +32,12 @@ import java.util.Collection;
 import net.minecraft.util.Identifier;
 
 /**
- * Represents an object that keeps track of a collection of channels.
+ * Represents an object that keeps track of a collection of supported channels,
+ * for sending or reception purposes.
  */
 public interface ChannelRegistry {
 	/**
-	 * Returns a collection of channels this object is tracking.
+	 * Returns a collection of channels this registry supports.
 	 *
 	 * <p>This collection does not contain duplicate channels.</p>
 	 *
@@ -45,7 +46,7 @@ public interface ChannelRegistry {
 	Collection<Identifier> getChannels();
 
 	/**
-	 * Returns whether a channel is tracked by this object.
+	 * Returns whether a channel is supported by this registry.
 	 *
 	 * @param channel the id of the channel to check
 	 * @return whether the channel is tracked
