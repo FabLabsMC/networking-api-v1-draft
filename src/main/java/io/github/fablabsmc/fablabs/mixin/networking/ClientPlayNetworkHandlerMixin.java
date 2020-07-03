@@ -27,14 +27,16 @@
 
 package io.github.fablabsmc.fablabs.mixin.networking;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
+import io.github.fablabsmc.fablabs.api.networking.v1.ClientNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.client.ClientPlayNetworkAddon;
 import io.github.fablabsmc.fablabs.impl.networking.client.ClientPlayNetworkHandlerHook;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
@@ -42,11 +44,12 @@ import net.minecraft.text.Text;
 
 @Mixin(ClientPlayNetworkHandler.class)
 public abstract class ClientPlayNetworkHandlerMixin implements ClientPlayNetworkHandlerHook {
+	@Shadow private MinecraftClient client;
 	private ClientPlayNetworkAddon addon;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void networking$ctor(CallbackInfo ci) {
-		this.addon = new ClientPlayNetworkAddon((ClientPlayNetworkHandler) (Object) this);
+		this.addon = new ClientPlayNetworkAddon((ClientPlayNetworkHandler) (Object) this, this.client);
 	}
 
 	@Inject(method = "onGameJoin", at = @At("RETURN"))
@@ -63,7 +66,7 @@ public abstract class ClientPlayNetworkHandlerMixin implements ClientPlayNetwork
 
 	@Inject(method = "onDisconnected", at = @At("HEAD"))
 	private void networking$onDisconnected(Text reason, CallbackInfo ci) {
-		ClientNetworking.PLAY_DISCONNECTED.invoker().handle(this.addon);
+		ClientNetworking.PLAY_DISCONNECTED.invoker().onPlayDisconnected((ClientPlayNetworkHandler) (Object) this, this.client);
 	}
 
 	@Override

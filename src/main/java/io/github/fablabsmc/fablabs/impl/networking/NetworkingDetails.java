@@ -33,9 +33,9 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
-import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
-import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
+import io.github.fablabsmc.fablabs.api.networking.v1.ClientNetworking;
+import io.github.fablabsmc.fablabs.api.networking.v1.PacketByteBufs;
+import io.github.fablabsmc.fablabs.api.networking.v1.ServerNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.client.ClientNetworkingDetails;
 import io.github.fablabsmc.fablabs.impl.networking.server.QueryIdFactory;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerNetworkingDetails;
@@ -56,8 +56,6 @@ public final class NetworkingDetails {
 	public static final Identifier EARLY_REGISTRATION_CHANNEL = new Identifier(MOD_ID, "early_registration.v1");
 	public static final boolean WARN_UNREGISTERED_PACKETS = Boolean
 			.parseBoolean(System.getProperty(MOD_ID + ".warnUnregisteredPackets", "true"));
-	public static final OffThreadGameAccessPolicy OFF_THREAD_GAME_ACCESS_POLICY = OffThreadGameAccessPolicy
-			.parse(System.getProperty(MOD_ID + ".offThreadGameAccess"), OffThreadGameAccessPolicy.THROW);
 
 	public static QueryIdFactory createQueryIdManager() {
 		// todo incremental ids or randomized
@@ -72,7 +70,7 @@ public final class NetworkingDetails {
 	}
 
 	public static void init() {
-		ServerNetworking.LOGIN_QUERY_START.register(context -> {
+		ServerNetworking.LOGIN_QUERY_START.register((handler, server, sender, synchronizer) -> {
 			PacketByteBuf buf = PacketByteBufs.create();
 			Collection<Identifier> channels = ServerNetworkingDetails.PLAY.getChannels();
 			buf.writeVarInt(channels.size());
@@ -81,10 +79,10 @@ public final class NetworkingDetails {
 				buf.writeIdentifier(id);
 			}
 
-			context.getPacketSender().sendPacket(EARLY_REGISTRATION_CHANNEL, buf);
+			sender.sendPacket(EARLY_REGISTRATION_CHANNEL, buf);
 			NetworkingDetails.LOGGER.debug("Sent accepted channels to the client");
 		});
-		ServerNetworking.getLoginReceiver().register(EARLY_REGISTRATION_CHANNEL, (context, buf, understood) -> {
+		ServerNetworking.getLoginReceiver().register(EARLY_REGISTRATION_CHANNEL, (handler, server, sender, buf, understood, synchronizer) -> {
 			if (!understood) {
 				return;
 			}
@@ -96,14 +94,14 @@ public final class NetworkingDetails {
 				ids.add(buf.readIdentifier());
 			}
 
-			((ChannelInfoHolder) context.getListener().getConnection()).getChannels().addAll(ids);
+			((ChannelInfoHolder) handler.getConnection()).getChannels().addAll(ids);
 			NetworkingDetails.LOGGER.debug("Received accepted channels from the client");
 		});
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static void clientInit() {
-		ClientNetworking.getLoginReceiver().register(EARLY_REGISTRATION_CHANNEL, (context, buf, listenerAdder) -> {
+		ClientNetworking.getLoginReceiver().register(EARLY_REGISTRATION_CHANNEL, (handler, client, buf, listenerAdder) -> {
 			int n = buf.readVarInt();
 			List<Identifier> ids = new ArrayList<>(n);
 
@@ -111,7 +109,7 @@ public final class NetworkingDetails {
 				ids.add(buf.readIdentifier());
 			}
 
-			((ChannelInfoHolder) context.getListener().getConnection()).getChannels().addAll(ids);
+			((ChannelInfoHolder) handler.getConnection()).getChannels().addAll(ids);
 			NetworkingDetails.LOGGER.debug("Received accepted channels from the server");
 
 			PacketByteBuf response = PacketByteBufs.create();

@@ -25,7 +25,7 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package io.github.fablabsmc.fablabs.api.networking.v1.util;
+package io.github.fablabsmc.fablabs.api.networking.v1;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

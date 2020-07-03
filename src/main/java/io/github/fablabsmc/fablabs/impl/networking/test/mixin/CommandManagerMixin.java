@@ -46,7 +46,7 @@ public abstract class CommandManagerMixin {
 	private CommandDispatcher<ServerCommandSource> dispatcher;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
-	public void networkingTest$ctor(boolean dedicated, CallbackInfo ci) {
+	public void networkingTest$ctor(CommandManager.RegistrationEnvironment env, CallbackInfo ci) {
 		NetworkingUser.registerCommand(this.dispatcher);
 	}
 }

@@ -29,44 +29,47 @@ package io.github.fablabsmc.fablabs.impl.networking.client;
 
 import java.util.List;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.PlayPacketSender;
-import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
-import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientPlayContext;
+import io.github.fablabsmc.fablabs.api.networking.v1.ClientNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.AbstractChanneledNetworkAddon;
-import io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.util.Identifier;
 
-public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<ClientPlayContext> implements ClientPlayContext {
+public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<ClientNetworking.PlayChannelHandler> {
 	private final ClientPlayNetworkHandler handler;
+	private final MinecraftClient client;
 
-	public ClientPlayNetworkAddon(ClientPlayNetworkHandler handler) {
+	public ClientPlayNetworkAddon(ClientPlayNetworkHandler handler, MinecraftClient client) {
 		super(ClientNetworkingDetails.PLAY, handler.getConnection());
 		this.handler = handler;
+		this.client = client;
 	}
 
 	// also expose sendRegistration
 
 	public void onServerReady() {
 		sendRegistration();
-		ClientNetworking.PLAY_INITIALIZED.invoker().handle(this);
+		ClientNetworking.PLAY_INITIALIZED.invoker().onPlayInitialized(this.handler, this.client, this);
 	}
 
 	public boolean handle(CustomPayloadS2CPacket packet) {
 		PacketByteBuf buf = packet.getData();
 
 		try {
-			return handle(packet.getChannel(), buf, this);
+			return handle(packet.getChannel(), buf);
 		} finally {
 			buf.release();
 		}
+	}
+
+	@Override
+	protected void receive(ClientNetworking.PlayChannelHandler handler, PacketByteBuf buf) {
+		handler.receive(this.handler, this.client, this, buf);
 	}
 
 	// impl details
@@ -83,34 +86,11 @@ public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 
 	@Override
 	protected void postRegisterEvent(List<Identifier> ids) {
-		ClientNetworking.CHANNEL_REGISTERED.invoker().handle(this, ids);
+		ClientNetworking.CHANNEL_REGISTERED.invoker().onChannelRegistered(this.handler, this.client, this, ids);
 	}
 
 	@Override
 	protected void postUnregisterEvent(List<Identifier> ids) {
-		ClientNetworking.CHANNEL_UNREGISTERED.invoker().handle(this, ids);
-	}
-
-	// context stuff
-
-	@Override
-	public ClientPlayerEntity getPlayer() {
-		NetworkingDetails.OFF_THREAD_GAME_ACCESS_POLICY.check(this, "the client player");
-		return MinecraftClient.getInstance().player;
-	}
-
-	@Override
-	public ClientPlayNetworkHandler getListener() {
-		return this.handler;
-	}
-
-	@Override
-	public PlayPacketSender getPacketSender() {
-		return this;
-	}
-
-	@Override
-	public MinecraftClient getEngine() {
-		return MinecraftClient.getInstance();
+		ClientNetworking.CHANNEL_UNREGISTERED.invoker().onChannelUnregistered(this.handler, this.client, this, ids);
 	}
 }

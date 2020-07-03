@@ -27,11 +27,13 @@
 
 package io.github.fablabsmc.fablabs.mixin.networking;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
+import io.github.fablabsmc.fablabs.api.networking.v1.ServerNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.DisconnectPacketSource;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerPlayNetworkAddon;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerPlayNetworkHandlerHook;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -39,16 +41,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.text.Text;
 
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin implements ServerPlayNetworkHandlerHook, DisconnectPacketSource {
+	@Shadow
+	@Final
+	private MinecraftServer server;
 	private ServerPlayNetworkAddon addon;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void networking$ctor(CallbackInfo ci) {
-		this.addon = new ServerPlayNetworkAddon((ServerPlayNetworkHandler) (Object) this);
+		this.addon = new ServerPlayNetworkAddon((ServerPlayNetworkHandler) (Object) this, this.server);
 	}
 
 	@Inject(method = "onCustomPayload", at = @At("HEAD"), cancellable = true)
@@ -60,7 +66,7 @@ public abstract class ServerPlayNetworkHandlerMixin implements ServerPlayNetwork
 
 	@Inject(method = "onDisconnected", at = @At("HEAD"))
 	private void networking$onDisconnected(Text reason, CallbackInfo ci) {
-		ServerNetworking.PLAY_DISCONNECTED.invoker().handle(this.addon);
+		ServerNetworking.PLAY_DISCONNECTED.invoker().onPlayDisconnected((ServerPlayNetworkHandler) (Object) this, this.server);
 	}
 
 	@Override

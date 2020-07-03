@@ -36,11 +36,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.PacketSender;
-import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerLoginChannelHandler;
-import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerLoginContext;
-import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
-import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
+import io.github.fablabsmc.fablabs.api.networking.v1.PacketByteBufs;
+import io.github.fablabsmc.fablabs.api.networking.v1.ServerNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.AbstractNetworkAddon;
 import io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails;
 import io.github.fablabsmc.fablabs.mixin.networking.access.LoginQueryRequestS2CPacketAccess;
@@ -56,7 +53,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.util.Identifier;
 
-public final class ServerLoginNetworkAddon extends AbstractNetworkAddon implements ServerLoginContext {
+public final class ServerLoginNetworkAddon extends AbstractNetworkAddon {
 	private final ServerLoginNetworkHandler handler;
 	private final MinecraftServer server;
 	private final QueryIdFactory queryIdFactory;
@@ -75,7 +72,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon implemen
 	public boolean queryTick() {
 		if (this.firstQueryTick) {
 			this.sendCompressionPacket();
-			ServerNetworking.LOGIN_QUERY_START.invoker().handle(this);
+			ServerNetworking.LOGIN_QUERY_START.invoker().onLoginStart(this.handler, this.server, this, this.waits::add);
 			this.firstQueryTick = false;
 		}
 
@@ -108,9 +105,9 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon implemen
 
 	private void sendCompressionPacket() {
 		if (this.server.getNetworkCompressionThreshold() >= 0 && !this.connection.isLocal()) {
-			this.connection.send(new LoginCompressionS2CPacket(this.server.getNetworkCompressionThreshold()), (channelFuture) -> {
-				this.connection.setCompressionThreshold(this.server.getNetworkCompressionThreshold());
-			});
+			this.connection.send(new LoginCompressionS2CPacket(this.server.getNetworkCompressionThreshold()), (channelFuture) ->
+					this.connection.setCompressionThreshold(this.server.getNetworkCompressionThreshold())
+			);
 		}
 	}
 
@@ -128,7 +125,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon implemen
 		}
 
 		boolean understood = originalBuf != null;
-		ServerLoginChannelHandler handler = ServerNetworkingDetails.LOGIN.get(channel);
+		ServerNetworking.LoginChannelHandler handler = ServerNetworkingDetails.LOGIN.get(channel);
 
 		if (handler == null) {
 			return false;
@@ -137,7 +134,7 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon implemen
 		PacketByteBuf buf = understood ? PacketByteBufs.slice(originalBuf) : PacketByteBufs.empty();
 
 		try {
-			handler.receive(this, buf, understood);
+			handler.receive(this.handler, this.server, this, buf, understood, this.waits::add);
 		} catch (Throwable ex) {
 			NetworkingDetails.LOGGER.error("Encountered exception while handling in channel \"{}\"", channel, ex);
 			throw ex;
@@ -156,25 +153,5 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon implemen
 		access.setChannel(channel);
 		access.setPayload(buf);
 		return ret;
-	}
-
-	@Override
-	public ServerLoginNetworkHandler getListener() {
-		return this.handler;
-	}
-
-	@Override
-	public PacketSender getPacketSender() {
-		return this;
-	}
-
-	@Override
-	public void waitFor(Future<?> future) {
-		this.waits.add(future);
-	}
-
-	@Override
-	public MinecraftServer getEngine() {
-		return this.server;
 	}
 }

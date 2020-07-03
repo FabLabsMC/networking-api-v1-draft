@@ -27,7 +27,7 @@
 
 package io.github.fablabsmc.fablabs.impl.networking.test;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking;
+import io.github.fablabsmc.fablabs.api.networking.v1.ClientNetworking;
 
 import net.minecraft.text.Text;
 
@@ -36,9 +36,9 @@ import net.fabricmc.api.ClientModInitializer;
 public final class NetworkingClientUser implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
-		ClientNetworking.getPlayReceiver().register(NetworkingUser.TEST_CHANNEL, (context, buf) -> {
+		ClientNetworking.getPlayReceiver().register(NetworkingUser.TEST_CHANNEL, (handler, client, sender, buf) -> {
 			Text text = buf.readText();
-			context.getEngine().send(() -> context.getEngine().inGameHud.setOverlayMessage(text, true));
+			client.send(() -> client.inGameHud.setOverlayMessage(text, true));
 		});
 	}
 }

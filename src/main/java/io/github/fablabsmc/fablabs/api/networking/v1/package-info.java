@@ -28,9 +28,9 @@
 /**
  * The Networking API, version 1.
  *
- * <p>Visit {@link io.github.fablabsmc.fablabs.api.networking.v1.client.ClientNetworking}
+ * <p>Visit {@link io.github.fablabsmc.fablabs.api.networking.v1.ClientNetworking}
  * for client-side networking hooks and
- * {@link io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking} for
+ * {@link io.github.fablabsmc.fablabs.api.networking.v1.ServerNetworking} for
  * server-side networking hooks.</p>
  */
 

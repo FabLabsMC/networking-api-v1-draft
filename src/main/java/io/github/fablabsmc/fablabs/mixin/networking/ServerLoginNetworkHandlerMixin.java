@@ -27,10 +27,11 @@
 
 package io.github.fablabsmc.fablabs.mixin.networking;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking;
+import io.github.fablabsmc.fablabs.api.networking.v1.ServerNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.DisconnectPacketSource;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerLoginNetworkAddon;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerLoginNetworkHandlerHook;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -51,6 +52,8 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
 
 	@Shadow
 	public abstract void acceptPlayer();
+
+	@Shadow @Final private MinecraftServer server;
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void networking$ctor(CallbackInfo ci) {
@@ -78,7 +81,7 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
 
 	@Inject(method = "onDisconnected", at = @At("HEAD"))
 	private void networking$onDisconnected(Text reason, CallbackInfo ci) {
-		ServerNetworking.LOGIN_DISCONNECTED.invoker().handle(this.addon);
+		ServerNetworking.LOGIN_DISCONNECTED.invoker().onLoginDisconnected((ServerLoginNetworkHandler) (Object) this, this.server);
 	}
 
 	@Override

@@ -31,10 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientLoginChannelHandler;
-import io.github.fablabsmc.fablabs.api.networking.v1.client.ClientLoginContext;
-import io.github.fablabsmc.fablabs.api.networking.v1.util.FutureListeners;
-import io.github.fablabsmc.fablabs.api.networking.v1.util.PacketByteBufs;
+import io.github.fablabsmc.fablabs.api.networking.v1.ClientNetworking;
+import io.github.fablabsmc.fablabs.api.networking.v1.FutureListeners;
+import io.github.fablabsmc.fablabs.api.networking.v1.PacketByteBufs;
 import io.github.fablabsmc.fablabs.impl.networking.NetworkingDetails;
 import io.github.fablabsmc.fablabs.mixin.networking.access.LoginQueryRequestS2CPacketAccess;
 import io.netty.util.concurrent.Future;
@@ -47,11 +46,13 @@ import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.util.Identifier;
 
-public final class ClientLoginNetworkAddon implements ClientLoginContext {
+public final class ClientLoginNetworkAddon {
 	private final ClientLoginNetworkHandler handler;
+	private final MinecraftClient client;
 
-	public ClientLoginNetworkAddon(ClientLoginNetworkHandler handler) {
+	public ClientLoginNetworkAddon(ClientLoginNetworkHandler handler, MinecraftClient client) {
 		this.handler = handler;
+		this.client = client;
 	}
 
 	public boolean handlePacket(LoginQueryRequestS2CPacket packet) {
@@ -60,7 +61,7 @@ public final class ClientLoginNetworkAddon implements ClientLoginContext {
 	}
 
 	private boolean handlePacket(int queryId, Identifier channel, PacketByteBuf originalBuf) {
-		ClientLoginChannelHandler handler = ClientNetworkingDetails.LOGIN.get(channel);
+		ClientNetworking.LoginChannelHandler handler = ClientNetworkingDetails.LOGIN.get(channel);
 
 		if (handler == null) {
 			return false;
@@ -70,7 +71,7 @@ public final class ClientLoginNetworkAddon implements ClientLoginContext {
 		List<GenericFutureListener<? extends Future<? super Void>>> futureListeners = new ArrayList<>();
 
 		try {
-			CompletableFuture<PacketByteBuf> future = handler.receive(this, buf, futureListeners::add);
+			CompletableFuture<PacketByteBuf> future = handler.receive(this.handler, this.client, buf, futureListeners::add);
 			future.thenAccept(result -> {
 				LoginQueryResponseC2SPacket packet = new LoginQueryResponseC2SPacket(queryId, result);
 				GenericFutureListener<? extends Future<? super Void>> listener = null;
@@ -87,15 +88,5 @@ public final class ClientLoginNetworkAddon implements ClientLoginContext {
 		}
 
 		return true;
-	}
-
-	@Override
-	public ClientLoginNetworkHandler getListener() {
-		return this.handler;
-	}
-
-	@Override
-	public MinecraftClient getEngine() {
-		return MinecraftClient.getInstance();
 	}
 }

@@ -25,18 +25,21 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package io.github.fablabsmc.fablabs.api.networking.v1.client;
+package io.github.fablabsmc.fablabs.api.networking.v1;
 
-import io.github.fablabsmc.fablabs.api.networking.v1.ChannelHandler;
-import io.github.fablabsmc.fablabs.api.networking.v1.PacketChannelCallback;
-import io.github.fablabsmc.fablabs.api.networking.v1.PacketListenerCallback;
-import io.github.fablabsmc.fablabs.api.networking.v1.PacketReceiver;
-import io.github.fablabsmc.fablabs.api.networking.v1.PlayPacketSender;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+
 import io.github.fablabsmc.fablabs.impl.networking.client.ClientNetworkingDetails;
+import io.netty.util.concurrent.Future;
+import io.netty.util.concurrent.GenericFutureListener;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
 import net.fabricmc.api.EnvType;
@@ -52,7 +55,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
  *
  * <p>This class should be only used on the physical client and for the logical client.</p>
  *
- * @see io.github.fablabsmc.fablabs.api.networking.v1.server.ServerNetworking
+ * @see ServerNetworking
  */
 @Environment(EnvType.CLIENT)
 public final class ClientNetworking {
@@ -63,47 +66,74 @@ public final class ClientNetworking {
 	 * {@link #getPlaySender(ClientPlayNetworkHandler)} to obtain the packet sender in
 	 * the callback.</p>
 	 */
-	public static final Event<PacketListenerCallback<ClientPlayContext>> PLAY_INITIALIZED = EventFactory
-			.createArrayBacked(PacketListenerCallback.class, callbacks -> context -> {
-				for (PacketListenerCallback<ClientPlayContext> callback : callbacks) {
-					callback.handle(context);
+	public static final Event<PlayInitializedCallback> PLAY_INITIALIZED = EventFactory
+			.createArrayBacked(PlayInitializedCallback.class, callbacks -> (handler, client, sender) -> {
+				for (PlayInitializedCallback callback : callbacks) {
+					callback.onPlayInitialized(handler, client, sender);
 				}
 			});
+
+	@Environment(EnvType.CLIENT)
+	@FunctionalInterface
+	public interface PlayInitializedCallback {
+		void onPlayInitialized(ClientPlayNetworkHandler handler, MinecraftClient client, PlayPacketSender sender);
+	}
+
 	/**
 	 * An event for the disconnection of the client play network handler.
 	 *
 	 * <p>No packets should be sent when this event is invoked.</p>
 	 */
-	public static final Event<PacketListenerCallback<ClientPlayContext>> PLAY_DISCONNECTED = EventFactory
-			.createArrayBacked(PacketListenerCallback.class, callbacks -> context -> {
-				for (PacketListenerCallback<ClientPlayContext> callback : callbacks) {
-					callback.handle(context);
+	public static final Event<PlayDisconnectedCallback> PLAY_DISCONNECTED = EventFactory
+			.createArrayBacked(PlayDisconnectedCallback.class, callbacks -> (handler, client) -> {
+				for (PlayDisconnectedCallback callback : callbacks) {
+					callback.onPlayDisconnected(handler, client);
 				}
 			});
+
+	@Environment(EnvType.CLIENT)
+	@FunctionalInterface
+	public interface PlayDisconnectedCallback {
+		void onPlayDisconnected(ClientPlayNetworkHandler handler, MinecraftClient client);
+	}
+
 	/**
 	 * An event for the client play network handler receiving an update indicating
 	 * the connected server's ability to receive packets in certain channels.
 	 *
 	 * @see PlayPacketSender#hasChannel(Identifier)
 	 */
-	public static final Event<PacketChannelCallback<ClientPlayContext>> CHANNEL_REGISTERED = EventFactory
-			.createArrayBacked(PacketChannelCallback.class, callbacks -> (context, channels) -> {
-				for (PacketChannelCallback<ClientPlayContext> callback : callbacks) {
-					callback.handle(context, channels);
+	public static final Event<ChannelRegisteredCallback> CHANNEL_REGISTERED = EventFactory
+			.createArrayBacked(ChannelRegisteredCallback.class, callbacks -> (handler, client, sender, channels) -> {
+				for (ChannelRegisteredCallback callback : callbacks) {
+					callback.onChannelRegistered(handler, client, sender, channels);
 				}
 			});
+
+	@Environment(EnvType.CLIENT)
+	@FunctionalInterface
+	public interface ChannelRegisteredCallback {
+		void onChannelRegistered(ClientPlayNetworkHandler handler, MinecraftClient client, PlayPacketSender sender, List<Identifier> channels);
+	}
+
 	/**
 	 * An event for the client play network handler receiving an update indicating
 	 * the connected server's lack of ability to receive packets in certain channels.
 	 *
 	 * @see PlayPacketSender#hasChannel(Identifier)
 	 */
-	public static final Event<PacketChannelCallback<ClientPlayContext>> CHANNEL_UNREGISTERED = EventFactory
-			.createArrayBacked(PacketChannelCallback.class, callbacks -> (context, channels) -> {
-				for (PacketChannelCallback<ClientPlayContext> callback : callbacks) {
-					callback.handle(context, channels);
+	public static final Event<ChannelUnregisteredCallback> CHANNEL_UNREGISTERED = EventFactory
+			.createArrayBacked(ChannelUnregisteredCallback.class, callbacks -> (handler, client, sender, channels) -> {
+				for (ChannelUnregisteredCallback callback : callbacks) {
+					callback.onChannelUnregistered(handler, client, sender, channels);
 				}
 			});
+
+	@Environment(EnvType.CLIENT)
+	@FunctionalInterface
+	public interface ChannelUnregisteredCallback {
+		void onChannelUnregistered(ClientPlayNetworkHandler handler, MinecraftClient client, PlayPacketSender sender, List<Identifier> channels);
+	}
 
 	/**
 	 * Returns the packet sender for the current client player.
@@ -140,8 +170,14 @@ public final class ClientNetworking {
 	 * handlers, receiving {@link net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket
 	 * server to client custom payload packets}.
 	 */
-	public static PacketReceiver<ChannelHandler<ClientPlayContext>> getPlayReceiver() {
+	public static PacketReceiver<PlayChannelHandler> getPlayReceiver() {
 		return ClientNetworkingDetails.PLAY;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@FunctionalInterface
+	public interface PlayChannelHandler {
+		void receive(ClientPlayNetworkHandler handler, MinecraftClient client, PlayPacketSender sender, PacketByteBuf buf);
 	}
 
 	/**
@@ -149,7 +185,13 @@ public final class ClientNetworking {
 	 * handlers, receiving {@link net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket
 	 * login query request packets}.
 	 */
-	public static PacketReceiver<ClientLoginChannelHandler> getLoginReceiver() {
+	public static PacketReceiver<LoginChannelHandler> getLoginReceiver() {
 		return ClientNetworkingDetails.LOGIN;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@FunctionalInterface
+	public interface LoginChannelHandler {
+		CompletableFuture<PacketByteBuf> receive(ClientLoginNetworkHandler handler, MinecraftClient client, PacketByteBuf buf, Consumer<GenericFutureListener<? extends Future<? super Void>>> listenerAdder);
 	}
 }
