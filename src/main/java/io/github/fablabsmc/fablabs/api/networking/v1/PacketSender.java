@@ -30,6 +30,7 @@ package io.github.fablabsmc.fablabs.api.networking.v1;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 
+import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
@@ -38,12 +39,38 @@ import net.minecraft.util.Identifier;
  */
 public interface PacketSender {
 	/**
+	 * Makes a packet for a channel.
+	 *
+	 * @param channel the id of the channel
+	 * @param buf     the content of the packet
+	 */
+	Packet<?> makePacket(Identifier channel, PacketByteBuf buf);
+
+	/**
+	 * Sends a packet.
+	 *
+	 * @param packet the packet
+	 */
+	void sendPacket(Packet<?> packet);
+
+	/**
+	 * Sends a packet.
+	 *
+	 * @param packet   the packet
+	 * @param callback an optional callback to execute after the packet is sent, may be {@code null}
+	 */
+	// the generic future listener can accept ChannelFutureListener
+	void sendPacket(Packet<?> packet, /* Nullable */ GenericFutureListener<? extends Future<? super Void>> callback);
+
+	/**
 	 * Sends a packet to a channel.
 	 *
 	 * @param channel the id of the channel
 	 * @param buf     the content of the packet
 	 */
-	void sendPacket(Identifier channel, PacketByteBuf buf);
+	default void sendPacket(Identifier channel, PacketByteBuf buf) {
+		sendPacket(makePacket(channel, buf));
+	}
 
 	/**
 	 * Sends a packet to a channel.
@@ -53,5 +80,7 @@ public interface PacketSender {
 	 * @param callback an optional callback to execute after the packet is sent, may be {@code null}
 	 */
 	// the generic future listener can accept ChannelFutureListener
-	void sendPacket(Identifier channel, PacketByteBuf buf, /* Nullable */ GenericFutureListener<? extends Future<? super Void>> callback);
+	default void sendPacket(Identifier channel, PacketByteBuf buf, /* Nullable */ GenericFutureListener<? extends Future<? super Void>> callback) {
+		sendPacket(makePacket(channel, buf), callback);
+	}
 }

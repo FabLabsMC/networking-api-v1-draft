@@ -40,7 +40,6 @@ import io.github.fablabsmc.fablabs.api.networking.v1.PlayPacketSender;
 import io.netty.util.AsciiString;
 
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
@@ -154,8 +153,6 @@ public abstract class AbstractChanneledNetworkAddon<H> extends AbstractNetworkAd
 
 	protected abstract void schedule(Runnable task);
 
-	protected abstract Packet<?> makeUncheckedPacket(Identifier channel, PacketByteBuf buf);
-
 	protected abstract void postRegisterEvent(List<Identifier> ids);
 
 	protected abstract void postUnregisterEvent(List<Identifier> ids);
@@ -178,15 +175,5 @@ public abstract class AbstractChanneledNetworkAddon<H> extends AbstractNetworkAd
 	@Override
 	public boolean hasChannel(Identifier channel) {
 		return this.sendableChannels.contains(channel);
-	}
-
-	@Override
-	public Packet<?> makePacket(Identifier channel, PacketByteBuf buf) {
-		if (NetworkingDetails.WARN_UNREGISTERED_PACKETS && !hasChannel(channel) && !channel.equals(NetworkingDetails.REGISTER_CHANNEL) && !channel.equals(
-				NetworkingDetails.UNREGISTER_CHANNEL)) {
-			NetworkingDetails.LOGGER.warn("Packet sent to unregistered channel \"{}\" on {}!", channel, this.connection);
-		}
-
-		return makeUncheckedPacket(channel, buf);
 	}
 }

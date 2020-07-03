@@ -25,32 +25,16 @@
  * For more information, please refer to <http://unlicense.org>
  */
 
-package io.github.fablabsmc.fablabs.mixin.networking.access;
+package io.github.fablabsmc.fablabs.impl.networking;
 
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
-
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
+import net.minecraft.network.ClientConnection;
+import net.minecraft.network.Packet;
 import net.minecraft.util.Identifier;
 
-@Mixin(LoginQueryRequestS2CPacket.class)
-public interface LoginQueryRequestS2CPacketAccess {
-	@Accessor("queryId")
-	int getServerQueryId();
+public interface PacketChecker {
+	void checkPacket(Packet<?> packet);
 
-	@Accessor
-	Identifier getChannel();
-
-	@Accessor
-	void setChannel(Identifier channel);
-
-	@Accessor
-	PacketByteBuf getPayload();
-
-	@Accessor
-	void setPayload(PacketByteBuf payload);
-
-	@Accessor
-	void setQueryId(int queryId);
+	default void warn(Identifier channel, ClientConnection connection) {
+		NetworkingDetails.LOGGER.warn("Packet sent to unregistered channel \"{}\" on {}!", channel, connection);
+	}
 }

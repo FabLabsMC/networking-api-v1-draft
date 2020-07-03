@@ -33,8 +33,6 @@ import io.netty.util.concurrent.GenericFutureListener;
 
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.Packet;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Identifier;
 
 // server login
 public abstract class AbstractNetworkAddon implements PacketSender {
@@ -44,15 +42,13 @@ public abstract class AbstractNetworkAddon implements PacketSender {
 		this.connection = connection;
 	}
 
-	protected abstract Packet<?> makePacket(Identifier channel, PacketByteBuf buf);
-
 	@Override
-	public void sendPacket(Identifier channel, PacketByteBuf buf) {
-		this.connection.send(makePacket(channel, buf));
+	public void sendPacket(Packet<?> packet) {
+		this.connection.send(packet);
 	}
 
 	@Override
-	public void sendPacket(Identifier channel, PacketByteBuf buf, GenericFutureListener<? extends Future<? super Void>> callback) {
-		this.connection.send(makePacket(channel, buf), callback);
+	public void sendPacket(Packet<?> packet, GenericFutureListener<? extends Future<? super Void>> callback) {
+		this.connection.send(packet, callback);
 	}
 }

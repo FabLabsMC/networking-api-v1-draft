@@ -29,6 +29,7 @@ package io.github.fablabsmc.fablabs.mixin.networking;
 
 import io.github.fablabsmc.fablabs.api.networking.v1.ServerNetworking;
 import io.github.fablabsmc.fablabs.impl.networking.DisconnectPacketSource;
+import io.github.fablabsmc.fablabs.impl.networking.PacketChecker;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerLoginNetworkAddon;
 import io.github.fablabsmc.fablabs.impl.networking.server.ServerLoginNetworkHandlerHook;
 import org.spongepowered.asm.mixin.Final;
@@ -42,12 +43,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.text.Text;
 
 @Mixin(ServerLoginNetworkHandler.class)
-public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetworkHandlerHook, DisconnectPacketSource {
+public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetworkHandlerHook, DisconnectPacketSource, PacketChecker {
 	private ServerLoginNetworkAddon addon;
 
 	@Shadow
@@ -84,6 +86,13 @@ public abstract class ServerLoginNetworkHandlerMixin implements ServerLoginNetwo
 	@Inject(method = "onDisconnected", at = @At("HEAD"))
 	private void networking$onDisconnected(Text reason, CallbackInfo ci) {
 		ServerNetworking.LOGIN_DISCONNECTED.invoker().onLoginDisconnected((ServerLoginNetworkHandler) (Object) this, this.server);
+	}
+
+	@Override
+	public void checkPacket(Packet<?> packet) {
+		if (packet instanceof LoginQueryRequestS2CPacket) {
+			this.addon.registerOutgoingPacket((LoginQueryRequestS2CPacket) packet);
+		}
 	}
 
 	@Override

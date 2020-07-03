@@ -146,12 +146,16 @@ public final class ServerLoginNetworkAddon extends AbstractNetworkAddon {
 	@Override
 	public Packet<?> makePacket(Identifier channel, PacketByteBuf buf) {
 		int queryId = queryIdFactory.nextId();
-		channels.put(queryId, channel);
 		LoginQueryRequestS2CPacket ret = new LoginQueryRequestS2CPacket();
 		LoginQueryRequestS2CPacketAccess access = (LoginQueryRequestS2CPacketAccess) ret;
 		access.setQueryId(queryId);
 		access.setChannel(channel);
 		access.setPayload(buf);
 		return ret;
+	}
+
+	public void registerOutgoingPacket(LoginQueryRequestS2CPacket packet) {
+		LoginQueryRequestS2CPacketAccess access = (LoginQueryRequestS2CPacketAccess) packet;
+		channels.put(access.getServerQueryId(), access.getChannel());
 	}
 }

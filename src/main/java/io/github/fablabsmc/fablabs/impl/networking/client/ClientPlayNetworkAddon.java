@@ -80,7 +80,7 @@ public final class ClientPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 	}
 
 	@Override
-	protected Packet<?> makeUncheckedPacket(Identifier channel, PacketByteBuf buf) {
+	public Packet<?> makePacket(Identifier channel, PacketByteBuf buf) {
 		return new CustomPayloadC2SPacket(channel, buf);
 	}
 

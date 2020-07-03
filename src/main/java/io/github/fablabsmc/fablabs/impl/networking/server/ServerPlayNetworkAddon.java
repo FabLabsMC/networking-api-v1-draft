@@ -74,7 +74,7 @@ public final class ServerPlayNetworkAddon extends AbstractChanneledNetworkAddon<
 	}
 
 	@Override
-	protected Packet<?> makeUncheckedPacket(Identifier channel, PacketByteBuf buf) {
+	public Packet<?> makePacket(Identifier channel, PacketByteBuf buf) {
 		return new CustomPayloadS2CPacket(channel, buf);
 	}
 

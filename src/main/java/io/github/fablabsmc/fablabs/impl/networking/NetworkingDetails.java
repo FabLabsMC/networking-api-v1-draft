@@ -47,6 +47,7 @@ import net.minecraft.util.Identifier;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.loader.api.FabricLoader;
 
 public final class NetworkingDetails {
 	public static final String MOD_ID = "networking-api-v1-draft";
@@ -54,8 +55,7 @@ public final class NetworkingDetails {
 	public static final Identifier REGISTER_CHANNEL = new Identifier("minecraft", "register");
 	public static final Identifier UNREGISTER_CHANNEL = new Identifier("minecraft", "unregister");
 	public static final Identifier EARLY_REGISTRATION_CHANNEL = new Identifier(MOD_ID, "early_registration.v1");
-	public static final boolean WARN_UNREGISTERED_PACKETS = Boolean
-			.parseBoolean(System.getProperty(MOD_ID + ".warnUnregisteredPackets", "true"));
+	public static final boolean CHECK_PACKETS = parseOrDefault(MOD_ID + ".checkPackets", FabricLoader.getInstance().isDevelopmentEnvironment());
 
 	public static QueryIdFactory createQueryIdManager() {
 		// todo incremental ids or randomized
@@ -123,5 +123,10 @@ public final class NetworkingDetails {
 			NetworkingDetails.LOGGER.debug("Sent accepted channels to the server");
 			return CompletableFuture.completedFuture(response);
 		});
+	}
+
+	private static boolean parseOrDefault(String key, boolean fallback) {
+		String val = System.getProperty(key);
+		return val == null ? fallback : Boolean.parseBoolean(val);
 	}
 }
